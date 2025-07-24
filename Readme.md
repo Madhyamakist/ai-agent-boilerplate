@@ -88,3 +88,11 @@ source .venv/bin/activate
 </details>
 
 ---
+
+### Install dependencies
+After activating your virtual environment, install dependencies by
+
+```bash
+pip install -r requirements.txt
+```
+---
