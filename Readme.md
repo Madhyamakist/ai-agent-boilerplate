@@ -1,4 +1,4 @@
-# Chatbot POC
+# AI Agent Boilerplate
 
 This project is a simple AI agent powered by Groq cloud (via LangChain), delivered through a Flask backend. All logic will be cleanly separated into modular files for easy maintenance and extension.
 
