@@ -80,10 +80,7 @@ venv\Scripts\activate
 
 #### macOS
 <details>
-- Navigate to your project directory
-```bash
-cd path/to/your/project
-```
+
 - Create a virtual environment named "venv", 
 
 ```bash
