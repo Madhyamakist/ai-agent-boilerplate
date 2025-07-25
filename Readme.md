@@ -1,6 +1,6 @@
 # AI Agent Boilerplate
 
-This project is a simple AI agent powered by Groq cloud (via LangChain), delivered through a Flask backend. All logic will be cleanly separated into modular files for easy maintenance and extension.
+This project is a simple AI agent powered by Groq cloud (via LangChain), delivered through a Flask backend. 
 
 ## Tech Stack
 
@@ -16,35 +16,43 @@ This project is a simple AI agent powered by Groq cloud (via LangChain), deliver
 
 ## Prerequisites
 
-### Install Python and create virtual environment
+### Install Python 
 
    - [Windows](https://github.com/Madhyamakist/workspace-setup-windows) 
    - [macOS](https://github.com/Madhyamakist/workspace-setup-mac/blob/dev/python_installation.md)
    <!-- - [Linux](https://github.com/Madhyamakist/workspace-setup-windows/blob/dev/python_installation.md)   -->
 
 
-### Get a valid Groq API
+### Python version control
 
+#### macOS and Linux
 
-- Go to [Groq](https://console.groq.com/keys) and create API Key
----
-
+<details>
 
 
 The Python version needs to be the same as mentioned in the `.tool-versions` file.
 
-Install the Python version if not installed:
-```
-asdf install python X.Y.Z
-```
-
-
-Make sure the correct Python version has been set before you work on this project.
+Make sure the correct Python version has been set up using `asdf` before you work on this project.
 ```
 python3 --version
 ```
 
-Before getting started, ensure `asdf` and Python is installed and working.This project uses [asdf](https://asdf-vm.com/) to manage language versions. 
+
+</details>
+
+#### Windows
+
+<details>
+
+
+- The Python version needs to be the same as mentioned in the `.python-version` file.
+
+- Make sure the correct Python version has been set before you work on this project by running `python --version`
+
+
+</details>
+
+---
 
 ## Getting Started
 
@@ -62,11 +70,11 @@ git clone https://github.com/Madhyamakist/ai-agent-boilerplate.git myproject
 - To create a virtual environment called "venv", run
 
 ```bash
-python -m venv test
+python -m venv venv
 ```
 -  To activate the environment
 ```bash
-test\Scripts\activate
+venv\Scripts\activate
 ```
 </details>
 
@@ -76,10 +84,10 @@ test\Scripts\activate
 ```bash
 cd path/to/your/project
 ```
-- Create a virtual environment named "test", 
+- Create a virtual environment named "venv", 
 
 ```bash
-python3 -m venv .test
+python3 -m venv .venv
 ```
 -  To activate the environment
 ```bash
@@ -88,3 +96,4 @@ source .venv/bin/activate
 </details>
 
 ---
+
