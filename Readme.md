@@ -45,7 +45,7 @@ python3 --version
 <details>
 
 
-- The Python version needs to be the same as mentioned in the `.python-version` file.
+- The Python version needs to be the same as mentioned in the `.python-version` file using pyenv-win.
 
 - Make sure the correct Python version has been set before you work on this project by running `python --version`
 
