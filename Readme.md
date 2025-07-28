@@ -47,7 +47,7 @@ python3 --version
 
 - The Python version needs to be the same as mentioned in the `.python-version` file using pyenv-win.
 
-- Make sure the correct Python version has been set before you work on this project by running `python --version`
+- Make sure the correct Python version has been set by running `python --version`
 
 
 </details>
@@ -84,11 +84,11 @@ venv\Scripts\activate
 - Create a virtual environment named "venv", 
 
 ```bash
-python3 -m venv .venv
+python3 -m venv venv
 ```
 -  To activate the environment
 ```bash
-source .venv/bin/activate
+source venv/bin/activate
 ```
 </details>
 
