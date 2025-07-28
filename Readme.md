@@ -94,3 +94,19 @@ source venv/bin/activate
 
 ---
 
+### Install dependencies
+After activating your virtual environment, install dependencies by
+
+```bash
+pip install -r requirements.txt
+```
+
+## Run Flask to render frontend
+
+If virtual environment is activated and dependencies are installed then run chatbot by:
+
+```bash
+python app.py
+```
+Now visit http://127.0.0.1:5000 in your browser.
+

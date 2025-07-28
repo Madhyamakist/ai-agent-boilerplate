@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>LLM Chatbot</title>
+</head>
+<body>
+  <h2>Chat with LLM</h2>
+  <div id="chatbox"></div>
+  <form id="chatForm">
+    <input type="text" id="user_input" autocomplete="off" required>
+    <button type="submit">Send</button>
+  </form>
+<script>
+  document.getElementById('chatForm').onsubmit = async function(e) {
+    e.preventDefault();
+    const input = document.getElementById('user_input');
+    let userMsg = input.value;
+    document.getElementById('chatbox').innerHTML += `<b>You:</b> ${userMsg}<br>`;
+    input.value = '';
+    const response = await fetch('/chat', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({user_input: userMsg})
+    });
+    const data = await response.json();
+    document.getElementById('chatbox').innerHTML += `<b>Bot:</b> ${data.response}<br>`;
+  };
+</script>
+</body>
+</html>
