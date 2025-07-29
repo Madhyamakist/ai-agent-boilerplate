@@ -1,4 +1,4 @@
-# This is temporary file, later replaed by next 
+<!-- # This is temporary file, later replaed by Next.js frontend -->
 
 
 <!DOCTYPE html>
@@ -46,14 +46,14 @@
   <h2>Chat with LLM</h2>
   <div id="chatbox"></div>
   <form id="chatForm" autocomplete="off">
-    <input type="text" id="user_input" required>
+    <input type="text" id="input" required>
     <button type="submit">Send</button>
   </form>
 
 <script>
   document.getElementById('chatForm').onsubmit = async function(e) {
   e.preventDefault();
-  const input = document.getElementById('user_input');
+  const input = document.getElementById('input');
   let userMsg = input.value.trim();
   if (!userMsg) {
     alert("Please enter a message before sending.");
@@ -65,7 +65,7 @@
     const response = await fetch('/chat', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({user_input: userMsg})
+      body: JSON.stringify({input: userMsg})
     });
     const data = await response.json();
 
