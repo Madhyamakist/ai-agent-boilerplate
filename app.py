@@ -19,11 +19,25 @@ def chat():
 
 @app.route('/chat', methods=['POST'])
 def chat_api():
-    user_input = request.json['user_input']
+    data = request.get_json()
+    user_input = data.get('user_input', '').strip()
+
+    # Input validation
+    if not user_input:
+        return jsonify({'success': False, 'error': "Please enter a message before sending."}), 400
+    if len(user_input) > 100:
+        return jsonify({'success': False, 'error': "Your message is too long. Please limit to 100 characters."}), 400
+
     try:
-        return jsonify({'response': "Hello"})
+        return jsonify({'success': True, 'response': "Hello"})
     except Exception as e:
-        return jsonify({'response': f"Error: {e}"}), 500
+        # Log the error on server side as needed
+        print(f"Error on server side: {e}")
+        return jsonify({'success': False, 'error': "Sorry, something went wrong while processing your message. Please try again later."}), 500
+
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
