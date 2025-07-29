@@ -2,6 +2,8 @@ import os
 from flask import Flask, render_template, request, jsonify
 from dotenv import load_dotenv
 
+# Define Input limit
+input_limit = 500
 
 # Loads .env file
 
@@ -25,7 +27,7 @@ def chat_api():
     # Input validation
     if not user_input:
         return jsonify({'success': False, 'error': "Please enter a message before sending."}), 400
-    if len(user_input) > 100:
+    if len(user_input) > input_limit:
         return jsonify({'success': False, 'error': "Your message is too long. Please limit to 100 characters."}), 400
 
     try:
