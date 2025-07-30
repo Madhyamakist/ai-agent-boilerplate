@@ -1,0 +1,87 @@
+<!-- # This is temporary file, later replaed by Next.js frontend -->
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>LLM Chatbot</title>
+  <meta charset="UTF-8">
+  <!-- Mobile-friendly viewport for responsivity -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    #chatbox {
+      border: 1px solid #ccc;
+      padding: 10px;
+      height: 300px;
+      width: 100%;
+      max-width: 500px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+      background: #fafafa;
+    }
+    form {
+      display: flex;
+      max-width: 500px;
+    }
+    input[type="text"] {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px 0 0 4px;
+    }
+    button {
+      padding: 8px 14px;
+      border: 1px solid #1a73e8;
+      border-radius: 0 4px 4px 0;
+      background: #1a73e8;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #1761c7;
+    }
+  </style>
+</head>
+<body>
+  <h2>Chat with LLM</h2>
+  <div id="chatbox"></div>
+  <form id="chatForm" autocomplete="off">
+    <input type="text" id="input" required>
+    <button type="submit">Send</button>
+  </form>
+
+<script>
+  document.getElementById('chatForm').onsubmit = async function(e) {
+  e.preventDefault();
+  const input = document.getElementById('input');
+  let userMsg = input.value.trim();
+  if (!userMsg) {
+    alert("Please enter a message before sending.");
+    return;
+  }
+  document.getElementById('chatbox').innerHTML += `<b>You:</b> ${userMsg}<br>`;
+  input.value = '';
+  try {
+    const response = await fetch('/chat', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({input: userMsg})
+    });
+    const data = await response.json();
+
+    if (data.success) {
+      document.getElementById('chatbox').innerHTML += `<b>Bot:</b> ${data.response}<br>`;
+    } else {
+      // Show the friendly error message
+      document.getElementById('chatbox').innerHTML += `<span style="color: red;"><b>Error:</b> ${data.error}</span><br>`;
+    }
+  } catch (err) {
+    document.getElementById('chatbox').innerHTML += `<span style="color: red;"><b>Error:</b> Network or server issue. Please try again later.</span><br>`;
+  }
+  document.getElementById('chatbox').scrollTop = document.getElementById('chatbox').scrollHeight;
+};
+
+  
+</script>
+</body>
+</html>
