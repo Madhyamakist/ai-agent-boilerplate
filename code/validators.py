@@ -6,5 +6,5 @@ def validate_input(input):
     if not input:
         return False, "Please enter a message before sending."
     if len(input) > max_input_length:
-        return False, "Your message is too long. Please limit to 10000 characters."
+        return False, f"Your message is too long. Please limit to {max_input_length} characters."
     return True, ""
