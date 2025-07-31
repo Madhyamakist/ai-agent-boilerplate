@@ -1,4 +1,3 @@
-
 # Add other constants as needed
 import os
 from dotenv import load_dotenv
@@ -6,10 +5,9 @@ load_dotenv()
 # Flask settings
 DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
-# DEBUG = os.getenv("DEBUG", "False").strip().lower() == "true"
+# Fetch API key and LLM model from environment variable set via .env file
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
+GROQ_MODEL_NAME = os.environ.get("GROQ_MODEL_NAME", "meta-llama/llama-4-scout-17b-16e-instruct")  # default if not set
 
-# debug_str = os.getenv("DEBUG", "False")
-# print(f"DEBUG environment variable raw: '{debug_str}'")
-# DEBUG = debug_str.strip().lower() == "true"
 # Chat input limits
 max_input_length = 10000
