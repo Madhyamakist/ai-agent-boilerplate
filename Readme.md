@@ -53,6 +53,11 @@ python3 --version
 </details>
 
 ---
+### Get a valid Groq API
+
+
+- Go to [Groq](https://console.groq.com/keys) and create API Key
+- Put your Groq API key in `code/.env` file
 
 ## Getting Started
 
