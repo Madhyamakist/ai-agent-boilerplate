@@ -1,15 +1,30 @@
 import os
 from langchain_groq import ChatGroq
-from config import GROQ_API_KEY, GROQ_MODEL_NAME
+from config import GROQ_API_KEY, GROQ_MODEL_NAME, table_name
 from system_prompt import get_system_prompt
+from langchain.memory import ConversationBufferMemory
+from langchain_postgres import PostgresChatMessageHistory
 from langchain.schema import HumanMessage, AIMessage
-from chat_history import memory
+from db import sync_connection
 
 
-def get_groq_response(input):
+def get_groq_response(input, session_id):
     """
-    Generate a Groq LLM response with single shared memory for all users (no session).
+    Generate a Groq LLM response 
     """
+    # Database setup 
+    postgres_history = PostgresChatMessageHistory(
+        table_name,
+        session_id,
+        sync_connection=sync_connection
+        )
+
+    # GLOBAL memory object using PostgreSQL backend
+    memory = ConversationBufferMemory(
+        memory_key="chat_history", 
+        return_messages=True,
+        chat_memory=postgres_history
+        )
 
     # Start the message list with system prompt
     messages = [("system", get_system_prompt())]

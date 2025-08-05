@@ -51,6 +51,7 @@
   </form>
 
 <script>
+  const sessionId = "87e59473-4e34-41dc-9113-9dafbee8df86"
   document.getElementById('chatForm').onsubmit = async function(e) {
   e.preventDefault();
   const input = document.getElementById('input');
@@ -65,7 +66,7 @@
     const response = await fetch('/chat', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({input: userMsg})
+      body: JSON.stringify({input: userMsg,session_id: sessionId }) // include session id in payload
     });
     const data = await response.json();
 
