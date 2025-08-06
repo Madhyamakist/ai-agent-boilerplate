@@ -19,3 +19,4 @@ table_name  = 'chat_table'
 # Local PostgreSQL database (you'll need PostgreSQL installed locally)
 # Default connection for local PostgreSQL instance
 DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://postgres:password@localhost:5432/')
+DATABASE_URL = DATABASE_URL + db_name
