@@ -5,3 +5,4 @@ langchain-groq
 langchain-community
 langchain-postgres
 psycopg[binary,pool]
+langchain-core
