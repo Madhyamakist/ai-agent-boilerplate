@@ -59,6 +59,13 @@ python3 --version
 - Go to [Groq](https://console.groq.com/keys) and create API Key
 - Put your Groq API key in `code/.env` file
 
+---
+### Setup PostgreSQL
+
+
+- Install and setup PostgreSQL in you local
+- Adjust your username and password in `code/.env` file
+
 ## Getting Started
 
 ### Clone the repository:
