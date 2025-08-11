@@ -7,17 +7,19 @@ from db import sync_connection
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
+# Database setup 
+def get_session_history(session_id):
+    return PostgresChatMessageHistory(
+        table_name,
+        session_id,
+        sync_connection=sync_connection
+    )
+
 def get_groq_response(input_text, session_id):
     """
     Generate a Groq LLM response using RunnableWithMessageHistory for chat memory.
     """
-    # Database setup 
-    def get_session_history(session_id):
-        return PostgresChatMessageHistory(
-            table_name,
-            session_id,
-            sync_connection=sync_connection
-        )
+
     # Create the LLM
     llm = ChatGroq(groq_api_key=GROQ_API_KEY, model=GROQ_MODEL_NAME)
     
