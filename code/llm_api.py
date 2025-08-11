@@ -6,6 +6,7 @@ from langchain_postgres import PostgresChatMessageHistory
 from db import sync_connection
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from conversation_processor import process_conversation
 
 # Database setup 
 def get_session_history(session_id):
@@ -49,5 +50,17 @@ def get_groq_response(input_text, session_id):
         {"input": input_text},
         config=config
     )
+
+    bot_response = response.content
+
+    try:
+        process_conversation(input_text,bot_response, session_id)
+        print("[LLM_API] Conversation processing completed")
+    except Exception as processing_error:
+        print(f"[LLM_API] Warning: Conversation processing failed: {processing_error}")
+
+
+
     
-    return response.content
+    return bot_response
+
