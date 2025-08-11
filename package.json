@@ -1,0 +1,10 @@
+{
+  "name": "myproject",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev --prefix frontend/code\" \"cd code && python app.py\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.0"
+  }
+}

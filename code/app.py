@@ -3,10 +3,10 @@ from flask import Flask, render_template, request, jsonify
 from llm_api import get_groq_response
 from validators import validate_input
 from config import DEBUG
-
+from flask_cors import CORS
 
 app = Flask(__name__)
-
+CORS(app)
 
 #render HTML frontend
 @app.route('/')
@@ -37,4 +37,4 @@ def chat_api():
             'error': "Sorry, something went wrong while processing your message. Please try again later."}), 500
 
 if __name__ == '__main__':
-    app.run(debug=DEBUG)
+    app.run(debug=DEBUG,port=5000)
