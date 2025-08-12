@@ -51,35 +51,39 @@
   </form>
 
 <script>
-  document.getElementById('chatForm').onsubmit = async function(e) {
-  e.preventDefault();
-  const input = document.getElementById('input');
-  let userMsg = input.value.trim();
-  if (!userMsg) {
-    alert("Please enter a message before sending.");
-    return;
-  }
-  document.getElementById('chatbox').innerHTML += `<b>You:</b> ${userMsg}<br>`;
-  input.value = '';
-  try {
-    const response = await fetch('/chat', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({input: userMsg})
-    });
-    const data = await response.json();
 
-    if (data.success) {
-      document.getElementById('chatbox').innerHTML += `<b>Bot:</b> ${data.response}<br>`;
-    } else {
-      // Show the friendly error message
-      document.getElementById('chatbox').innerHTML += `<span style="color: red;"><b>Error:</b> ${data.error}</span><br>`;
+  const sessionId = crypto.randomUUID();
+
+  document.getElementById('chatForm').onsubmit = async function(e) {
+    e.preventDefault();
+    const input = document.getElementById('input');
+    let userMsg = input.value.trim();
+    if (!userMsg) {
+      alert("Please enter a message before sending.");
+      return;
     }
-  } catch (err) {
-    document.getElementById('chatbox').innerHTML += `<span style="color: red;"><b>Error:</b> Network or server issue. Please try again later.</span><br>`;
-  }
-  document.getElementById('chatbox').scrollTop = document.getElementById('chatbox').scrollHeight;
-};
+    document.getElementById('chatbox').innerHTML += `<b>You:</b> ${userMsg}<br>`;
+    input.value = '';
+    try {
+      const response = await fetch('/chat', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({input: userMsg,session_id: sessionId }) // include session id in payload
+        });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        document.getElementById('chatbox').innerHTML += `<b>Bot:</b> ${data.response}<br>`;
+      } else {
+        // Show the friendly error message
+        document.getElementById('chatbox').innerHTML += `<span style="color: red;"><b>Error:</b> ${data.error}</span><br>`;
+      }
+    } catch (err) {
+      document.getElementById('chatbox').innerHTML += `<span style="color: red;"><b>Error:</b> Network or server issue. Please try again later.</span><br>`;
+    }
+    document.getElementById('chatbox').scrollTop = document.getElementById('chatbox').scrollHeight;
+  };
 
   
 </script>
