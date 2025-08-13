@@ -3,8 +3,10 @@ from datetime import datetime
 from db import sync_connection
 from langchain_groq import ChatGroq
 from config import GROQ_API_KEY, GROQ_MODEL_NAME
+from langchain.schema import SystemMessage, HumanMessage, AIMessage
+from system_prompt import get_name_prompt
 
-def process_conversation(user_input, bot_response, session_id):
+def process_conversation(user_input, session_id):
     """
     Main hook function that processes each conversation exchange.
     Only processes sessions that don't already have a name detected.
@@ -13,7 +15,7 @@ def process_conversation(user_input, bot_response, session_id):
     """
     try:
         # First check: Does this session already have a name?
-        if session_has_name(session_id):
+        if session_has_info(session_id):
             print(f"[PROCESSOR] Session {session_id} already has name detected. Skipping processing.")
             return
         
@@ -39,7 +41,7 @@ def process_conversation(user_input, bot_response, session_id):
         print(f"[PROCESSOR] Error in conversation processor: {e}")
         # Don't let processing errors break the chat flow
 
-def session_has_name(session_id):
+def session_has_info(session_id):
     """
     Check if a session already has a name detected.
     
@@ -84,40 +86,22 @@ def detect_name_with_llm(message):
         # Create LLM instance for name detection
         llm = ChatGroq(groq_api_key=GROQ_API_KEY, model=GROQ_MODEL_NAME)
         
-        # Focused prompt for name detection
-        detection_prompt = f"""
-You are a name detection assistant. Analyze the following user message and determine if the user is introducing themselves or providing their name.
+        # Get the prompt template and format with the message
+        prompt_template = get_name_prompt()
+        system_message_parts = prompt_template["system_message"]
+        # Join all parts and format with the actual message
+        system_content = "\n".join(system_message_parts).format(message=message)
 
-User message: "{message}"
+        # Create the prompt
+        full_prompt = [SystemMessage(content=system_content)]
 
-Rules:
-1. Only detect when the user is clearly providing THEIR OWN name
-2. Don't extract names of other people mentioned in conversation
-3. Don't extract names from phrases like "My name is not..." or "I don't want to give my name"
-4. Look for patterns like: "I'm [Name]", "My name is [Name]", "Call me [Name]", "I go by [Name]", etc.
 
-Respond ONLY with valid JSON in this exact format:
-{{
-    "name_detected": true/false,
-    "name": "extracted name here or empty string",
-    "confidence": "high/medium/low"
-}}
-
-Examples:
-- "Hi, I'm John Smith" → {{"name_detected": true, "name": "John Smith", "confidence": "high"}}
-- "My name is Sarah" → {{"name_detected": true, "name": "Sarah", "confidence": "high"}}
-- "Call me Mike" → {{"name_detected": true, "name": "Mike", "confidence": "high"}}
-- "John called me yesterday" → {{"name_detected": false, "name": "", "confidence": "high"}}
-- "What's the weather like?" → {{"name_detected": false, "name": "", "confidence": "high"}}
-
-Analyze the message and respond:
-"""
 
         # Get LLM response
-        response = llm.invoke(detection_prompt)
+        response = llm.invoke(full_prompt)
         response_text = response.content.strip()
         
-        print(f"[NAME_DETECTION] LLM Response: {response_text}")
+        # print(f"[NAME_DETECTION] LLM Response: {response_text}")
         
         # Parse JSON response
         try:
