@@ -19,7 +19,7 @@ def get_session_history(session_id):
         sync_connection=sync_connection
     )
 
-def get_groq_response(input_text, session_id,process_async=True):
+def get_groq_response(input_text, session_id):
     """
     Generate a Groq LLM response using RunnableWithMessageHistory for chat memory.
     
@@ -61,22 +61,12 @@ def get_groq_response(input_text, session_id,process_async=True):
     bot_response = response.content
 
     # Handle conversation processing
-    if process_async:
-        # Process conversation asynchronously to avoid blocking the response
-        _process_conversation_async(input_text, session_id)
-    else:
-        # Process conversation synchronously
-        _process_conversation_sync(input_text, session_id)
+    # Process conversation asynchronously to avoid blocking the response
+    _process_conversation_async(input_text, session_id)
+
 
     return bot_response
 
-def _process_conversation_sync(input_text, session_id):
-    """Process conversation synchronously."""
-    try:
-        process_conversation(input_text, session_id)
-        print("[LLM_API] Conversation processing completed")
-    except Exception as processing_error:
-        print(f"[LLM_API] Warning: Conversation processing failed: {processing_error}")
 
 def _process_conversation_async(input_text, session_id):
     """Process conversation asynchronously using ThreadPoolExecutor."""
