@@ -1,6 +1,4 @@
 import os
-import asyncio
-from concurrent.futures import ThreadPoolExecutor
 from langchain_groq import ChatGroq
 from config import GROQ_API_KEY, GROQ_MODEL_NAME, table_name
 from system_prompt import get_system_prompt
@@ -8,8 +6,6 @@ from langchain_postgres import PostgresChatMessageHistory
 from db import sync_connection
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from conversation_processor import process_conversation
-
 
 # Database setup 
 def get_session_history(session_id):
@@ -22,12 +18,8 @@ def get_session_history(session_id):
 def get_groq_response(input_text, session_id):
     """
     Generate a Groq LLM response using RunnableWithMessageHistory for chat memory.
-    
-    Args:
-        input_text: User input text
-        session_id: Session identifier
-        process_async: Whether to process conversation asynchronously (default: True)
     """
+
     # Create the LLM
     llm = ChatGroq(groq_api_key=GROQ_API_KEY, model=GROQ_MODEL_NAME)
     
@@ -57,26 +49,5 @@ def get_groq_response(input_text, session_id):
         {"input": input_text},
         config=config
     )
-
-    bot_response = response.content
-
-    # Handle conversation processing
-    # Process conversation asynchronously to avoid blocking the response
-    _process_conversation_async(input_text, session_id)
-
-
-    return bot_response
-
-
-def _process_conversation_async(input_text, session_id):
-    """Process conversation asynchronously using ThreadPoolExecutor."""
-    def process_in_background():
-        try:
-            process_conversation(input_text, session_id)
-            print("[LLM_API] Async conversation processing completed")
-        except Exception as processing_error:
-            print(f"[LLM_API] Warning: Async conversation processing failed: {processing_error}")
     
-    # Submit to thread pool for background processing
-    with ThreadPoolExecutor(max_workers=1) as executor:
-        executor.submit(process_in_background)
+    return response.content

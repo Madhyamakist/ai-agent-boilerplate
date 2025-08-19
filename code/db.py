@@ -30,55 +30,14 @@ def create_sync_connection(DATABASE_URL):
     """
     Establish a connection to the specified database.
     """
-    conn = psycopg.connect(DATABASE_URL)
-    conn.autocommit = False
-    return conn
+    return psycopg.connect(DATABASE_URL)
 
-def ensure_chat_table_exists(sync_connection, table_name):
+def ensure_table_exists(sync_connection, table_name):
     """
     Use LangChain's helper to make sure the chat history table exists.
     """
     PostgresChatMessageHistory.create_tables(sync_connection, table_name)
     print(f"Table '{table_name}' created or verified.")
-
-
-
-
-
-def ensure_summaries_table_exists(sync_connection):
-    """
-    Create the chat_info table for storing lead information and summaries.
-    """
-    try:
-        with sync_connection.cursor() as cur:
-            # Create the chat_info table
-            create_table_query = """
-            CREATE TABLE IF NOT EXISTS chat_info (
-                id SERIAL PRIMARY KEY,
-                session_id TEXT NOT NULL,
-                contact_name TEXT,
-                created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-                metadata JSONB DEFAULT '{}',
-                
-                -- Add constraint to prevent duplicate summaries for same session
-                UNIQUE(session_id)
-            );
-            
-            -- Create indexes for efficient querying
-            CREATE INDEX IF NOT EXISTS idx_chat_info_session_id 
-            ON chat_info(session_id);
-            
-            
-            CREATE INDEX IF NOT EXISTS idx_chat_info_created_at 
-            ON chat_info(created_at);
-            """
-            
-            cur.execute(create_table_query)
-            sync_connection.commit()
-            print("Table 'chat_info' created/verified successfully.")
-            
-    except Exception as e:
-        print(f"Error creating chat_info table: {e}")
 
 def setup_database_and_table(database_url, table_name):
     """
@@ -87,9 +46,7 @@ def setup_database_and_table(database_url, table_name):
     try:
         ensure_database_exists(DATABASE_URL, db_name)
         sync_connection = create_sync_connection(DATABASE_URL)
-
-        ensure_chat_table_exists(sync_connection, table_name)
-        ensure_summaries_table_exists(sync_connection)
+        ensure_table_exists(sync_connection, table_name)
         return sync_connection, table_name
     except Exception as e:
         print(f"Error setting up database: {e}")
