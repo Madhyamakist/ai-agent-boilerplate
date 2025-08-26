@@ -1,5 +1,6 @@
 python-dotenv
 flask 
+flask-cors
 langchain 
 langchain-groq
 langchain-community
