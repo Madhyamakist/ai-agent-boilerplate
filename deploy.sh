@@ -3,11 +3,11 @@ set -e  # exit if any command fails
 
 echo "Pulling latest code..."
 cd ~
-cd ~/Ai-agent-boilerplate
-git pull origin deploy
+cd ~/Ai-agent-boilerplate/ai-agent-boilerplate
+git fetch origin
+git reset --hard origin/deploy
 
 echo "Activating virtualenv..."
-cd ai-agent-boilerplate
 source venv/bin/activate
 
 echo "Setup .env file"
