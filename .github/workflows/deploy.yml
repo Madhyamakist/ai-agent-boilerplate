@@ -19,6 +19,5 @@ jobs:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
       - name: 'Run gcloud command'
         run: |
-          gcloud compute instances list # Example gcloud command
-
+          gcloud compute ssh --zone "us-central1-c" "ai-agent-cicd" --project "ai-agent-boilerplate0"
    
