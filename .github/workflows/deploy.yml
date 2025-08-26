@@ -17,7 +17,27 @@ jobs:
         with:
           project_id: ${{ secrets.GCP_PROJECT }} # Replace with your actual GCP project ID
           credentials_json: ${{ secrets.GCP_SA_KEY }}
-      - name: 'Run gcloud command'
+
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v2'
+
+      - name: 'Start VM Instance (if stopped)'
         run: |
-          gcloud compute ssh --zone "us-central1-c" "ai-agent-cicd" --project "ai-agent-boilerplate0"
-   
+          gcloud compute instances start ${{ secrets.GCP_VM_INSTANCE_NAME }} \
+            --zone=${{ secrets.GCP_ZONE }} || echo "VM already running"
+
+      - name: 'Deploy Application'
+        run: |
+          gcloud compute ssh ${{ secrets.GCP_VM_INSTANCE_NAME }} \
+            --zone=${{ secrets.GCP_ZONE }} \
+            --command="cd ~/Ai-agent-boilerplate && git pull origin deploy && chmod +x code/deploy.sh && ./deploy.sh deploy" \
+            --ssh-flag="-o StrictHostKeyChecking=no"
+
+      - name: 'Verify Deployment'
+        run: |
+          # Get external IP
+          EXTERNAL_IP=$(gcloud compute instances describe ${{ secrets.GCP_VM_INSTANCE_NAME }} \
+            --zone=${{ secrets.GCP_ZONE }} \
+            --format='get(networkInterfaces[0].accessConfigs[0].natIP)')
+          
+          echo "Application deployed at: http://$EXTERNAL_IP"
