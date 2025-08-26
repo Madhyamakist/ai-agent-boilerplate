@@ -1,0 +1,43 @@
+name: Deploy Python App to GCP E2 (Staging)
+
+on:
+  push:
+    branches:
+      - main   # change if you want a different branch for staging
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: deploy-staging   # matches the environment you created in GitHub
+
+    steps:
+      # 1. Checkout repo
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2. Setup gcloud CLI
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+
+      # 3. Configure SSH
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.GCP_INSTANCE }} >> ~/.ssh/known_hosts
+
+      # 4. Deploy on VM (Python app)
+      - name: Deploy to GCP VM
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.GCP_INSTANCE }} "
+            cd ~/Ai-agent-boilerplate && \
+            git fetch --all && \
+            git reset --hard origin/main && \
+            chmod +x deploy.sh && \
+            ./deploy.sh
+          "
