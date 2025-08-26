@@ -3,7 +3,8 @@ name: Deploy Python App to GCP E2 (Staging)
 on:
   push:
     branches:
-      - main   # change if you want a different branch for staging
+      - main
+      - deploy   # change if you want a different branch for staging
 
 jobs:
   deploy:
@@ -37,7 +38,7 @@ jobs:
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.GCP_INSTANCE }} "
             cd ~/Ai-agent-boilerplate && \
             git fetch --all && \
-            git reset --hard origin/main && \
+            git reset --hard origin/deploy && \
             chmod +x deploy.sh && \
             ./deploy.sh
           "
