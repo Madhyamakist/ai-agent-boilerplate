@@ -18,26 +18,12 @@ jobs:
           project_id: ${{ secrets.GCP_PROJECT }} # Replace with your actual GCP project ID
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-      - name: 'Set up Cloud SDK'
-        uses: 'google-github-actions/setup-gcloud@v2'
-
-      - name: 'Start VM Instance (if stopped)'
+      - name: Update startup script and restart VM
         run: |
-          gcloud compute instances start ${{ secrets.GCP_VM_INSTANCE_NAME }} \
-            --zone=${{ secrets.GCP_ZONE }} || echo "VM already running"
+          gcloud compute instances set-metadata ${{secrets.GCP_VM_INSTANCE_NAME}} \
+            --zone=${{secrets.GCP_ZONE}} \
+            --project=${{secrets.GCP_PROJECT}} \
+            --metadata-from-file=startup-script=./update_app.sh
 
-      - name: 'Deploy Application'
-        run: |
-          gcloud compute ssh ${{ secrets.GCP_VM_INSTANCE_NAME }} \
-            --zone=${{ secrets.GCP_ZONE }} \
-            --command="cd /home/vivek/Ai-agent-boilerplate/ai-agent-boilerplate && chmod +x deploy.sh && ./deploy.sh deploy" \
-            --ssh-flag="-o StrictHostKeyChecking=no"
-
-      - name: 'Verify Deployment'
-        run: |
-          # Get external IP
-          EXTERNAL_IP=$(gcloud compute instances describe ${{ secrets.GCP_VM_INSTANCE_NAME }} \
-            --zone=${{ secrets.GCP_ZONE }} \
-            --format='get(networkInterfaces[0].accessConfigs[0].natIP)')
-          
-          echo "Application deployed at: http://$EXTERNAL_IP"
+          gcloud compute instances stop ${{secrets.GCP_VM_INSTANCE_NAME}} --zone=${{secrets.GCP_ZONE}} --project=${{secrets.GCP_PROJECT}}
+          gcloud compute instances start ${{secrets.GCP_VM_INSTANCE_NAME}} --zone=${{secrets.GCP_ZONE}} --project=${{secrets.GCP_PROJECT}}
