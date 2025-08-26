@@ -30,7 +30,7 @@ jobs:
         run: |
           gcloud compute ssh ${{ secrets.GCP_VM_INSTANCE_NAME }} \
             --zone=${{ secrets.GCP_ZONE }} \
-            --command="cd ~/Ai-agent-boilerplate/ai-agent-boilerplate && chmod +x deploy.sh && ./deploy.sh deploy" \
+            --command="cd /home/vivek/Ai-agent-boilerplate/ai-agent-boilerplate && chmod +x deploy.sh && ./deploy.sh deploy" \
             --ssh-flag="-o StrictHostKeyChecking=no"
 
       - name: 'Verify Deployment'
