@@ -20,7 +20,7 @@ jobs:
 
       - name: Update startup script and restart VM
         run: |
-          gcloud compute instances set-metadata ${{secrets.GCP_VM_INSTANCE_NAME}} \
+          gcloud compute instances add-metadata ${{secrets.GCP_VM_INSTANCE_NAME}} \
             --zone=${{secrets.GCP_ZONE}} \
             --project=${{secrets.GCP_PROJECT}} \
             --metadata-from-file=startup-script=./update_app.sh
