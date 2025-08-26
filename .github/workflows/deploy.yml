@@ -12,33 +12,13 @@ jobs:
     environment: deploy-staging   # matches the environment you created in GitHub
 
     steps:
-      # 1. Checkout repo
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      # 2. Setup gcloud CLI
-      - name: Setup gcloud
-        uses: google-github-actions/setup-gcloud@v2
+      - uses: 'actions/checkout@v4' # Checkout your repository
+      - uses: 'google-github-actions/auth@v2' # Authenticate to Google Cloud
         with:
-          project_id: ${{ secrets.GCP_PROJECT }}
-          service_account_key: ${{ secrets.GCP_SA_KEY }}
-          export_default_credentials: true
-
-      # 3. Configure SSH
-      - name: Configure SSH
+          project_id: ${{ secrets.GCP_PROJECT }} # Replace with your actual GCP project ID
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+      - name: 'Run gcloud command'
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.GCP_INSTANCE }} >> ~/.ssh/known_hosts
+          gcloud compute instances list # Example gcloud command
 
-      # 4. Deploy on VM (Python app)
-      - name: Deploy to GCP VM
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.GCP_INSTANCE }} "
-            cd ~/Ai-agent-boilerplate && \
-            git fetch --all && \
-            git reset --hard origin/deploy && \
-            chmod +x deploy.sh && \
-            ./deploy.sh
-          "
+   
