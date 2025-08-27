@@ -1,8 +1,7 @@
 #!/bin/bash
 set -e  # exit if any command fails
 
-echo "Pulling latest code..."
-cd ~
+echo "Going to dir"
 cd /home/vivek/Ai-agent-boilerplate/ai-agent-boilerplate
 
 echo "Activating virtualenv..."
