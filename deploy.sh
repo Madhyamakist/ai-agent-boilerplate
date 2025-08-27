@@ -2,7 +2,7 @@
 set -e  # exit if any command fails
 
 echo "Going to dir"
-echo $HOME
+
 
 cd /home/vivek/Ai-agent-boilerplate/ai-agent-boilerplate
 
@@ -10,9 +10,9 @@ echo "Activating virtualenv..."
 source venv/bin/activate
 
 echo "Loading env variables..."
-source /home/vivek/.bashrc  
-
+source /root/.bashrc  
 echo "Setup .env file"
+echo ${POSTGRES_PASSWORD}
 cd code
 echo -n > .env
 cat <<EOF > .env
