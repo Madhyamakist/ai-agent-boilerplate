@@ -2,6 +2,8 @@
 set -e  # exit if any command fails
 
 echo "Going to dir"
+echo $HOME
+
 cd /home/vivek/Ai-agent-boilerplate/ai-agent-boilerplate
 
 echo "Activating virtualenv..."
