@@ -11,12 +11,10 @@ set -ex
 
 cd /home/vivek/Ai-agent-boilerplate/ai-agent-boilerplate
 
-# Fix git safe directory issue (local to repo, no $HOME needed)
-git config --local --add safe.directory /home/vivek/Ai-agent-boilerplate/ai-agent-boilerplate
 
 echo "Pulling latest code..."
-git fetch --all
-git reset --hard origin/deploy  # or origin/main if that's your branch
+git -c safe.directory=/home/vivek/Ai-agent-boilerplate/ai-agent-boilerplate fetch --all
+git -c safe.directory=/home/vivek/Ai-agent-boilerplate/ai-agent-boilerplate reset --hard origin/deploy
 
 echo "Running deploy.sh..."
 chmod +x deploy.sh
