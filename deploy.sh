@@ -3,9 +3,7 @@ set -e  # exit if any command fails
 
 echo "Pulling latest code..."
 cd ~
-cd ~/Ai-agent-boilerplate/ai-agent-boilerplate
-git fetch origin
-git reset --hard origin/deploy
+cd /home/vivek/Ai-agent-boilerplate/ai-agent-boilerplate
 
 echo "Activating virtualenv..."
 source venv/bin/activate
