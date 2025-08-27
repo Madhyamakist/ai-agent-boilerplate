@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+git config --global --add safe.directory /home/vivek/Ai-agent-boilerplate/ai-agent-boilerplate
 
 cd /home/vivek/Ai-agent-boilerplate/ai-agent-boilerplate
 
