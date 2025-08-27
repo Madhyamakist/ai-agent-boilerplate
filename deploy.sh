@@ -28,7 +28,7 @@ pip install -r requirements.txt
 echo "Restarting service..."
 pkill -f flask
 export FLASK_APP=app.py
-nohup flask run --host=0.0.0.0 --port=5000
+nohup flask run --host=0.0.0.0 --port=5000 &
 
 
 echo "✅ Deployment complete!"
