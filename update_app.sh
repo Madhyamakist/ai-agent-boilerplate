@@ -11,8 +11,8 @@ set -ex
 
 cd /home/vivek/Ai-agent-boilerplate/ai-agent-boilerplate
 
-# Fix git safe directory issue
-git config --global --add safe.directory /home/vivek/Ai-agent-boilerplate/ai-agent-boilerplate
+# Fix git safe directory issue (local to repo, no $HOME needed)
+git config --local --add safe.directory /home/vivek/Ai-agent-boilerplate/ai-agent-boilerplate
 
 echo "Pulling latest code..."
 git fetch --all
