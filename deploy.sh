@@ -19,6 +19,9 @@ GROQ_MODEL_NAME=meta-llama/llama-4-scout-17b-16e-instruct
 DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@localhost:5432/
 EOF
 
+echo ".env file content is:"
+cat .env
+
 echo "Installing dependencies..."
 pip install -r requirements.txt
 
