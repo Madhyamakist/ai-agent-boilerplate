@@ -20,5 +20,5 @@ git -c safe.directory=/home/vivek/Ai-agent-boilerplate/ai-agent-boilerplate fetc
 git -c safe.directory=/home/vivek/Ai-agent-boilerplate/ai-agent-boilerplate reset --hard origin/$BRANCH
 
 echo "Running deploy.sh..."
-chmod +x deploy.sh
-./deploy.sh deploy
+chmod +x scripts/deploy.sh
+./scripts/deploy.sh deploy
