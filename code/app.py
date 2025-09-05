@@ -22,13 +22,18 @@ def chat_api():
     data = request.get_json()
     input = data.get('input', '')
     session_id = data.get('session_id')
+    requesttype = data.get('requesttype')
     # Input Validation
     is_valid, message = validate_input(input)
     if not is_valid:
         return jsonify({'success': False, 'error': message}), 400
+    # Assign "generic" if "requesttype" is None, an empty string, or all spaces.
+    if not requesttype or requesttype.strip() == '':
+        requesttype = "generic" 
+
     # Get response from LLM
     try:
-        bot_response = get_groq_response(input.strip(), session_id)
+        bot_response = get_groq_response(input.strip(), session_id, requesttype)
         return jsonify({'success': True, 'response': bot_response})
     except Exception as e:
         print(f"Error during LLM call: {e}")
