@@ -1,0 +1,88 @@
+openapi: 3.0.0
+info:
+  title: Chat API
+  description: API specification for the Chat backend
+  version: 1.0.0
+servers:
+  - url: https://api.smalltech.in
+    description: Production server running on Google Cloud Platform (GCP)
+
+paths:
+  /health:
+    get:
+      summary: Health check endpoint
+      description: Returns a hello world message to verify the service is up.
+      responses:
+        "200":
+          description: Successful health check
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Hello World
+
+  /chat:
+    post:
+      summary: Chat with the bot
+      description: Send a user message and receive a chatbot response.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - input
+              properties:
+                input:
+                  type: string
+                  description: The user’s message
+                  example: "Hello bot"
+                session_id:
+                  type: string
+                  description: Session identifier for maintaining context. **Must be a valid UUID.**
+                  example: "0b3cf7e1-5b30-46df-b018-85ca4dbd4391"
+      responses:
+        "200":
+          description: Successful response from the chatbot
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  response:
+                    type: string
+                    description: Bot response message
+                    example: "Hi there! How can I help you today?"
+        "400":
+          description: Invalid input error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: "Input cannot be empty."
+        "500":
+          description: Server error during LLM call
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: "Sorry, something went wrong while processing your message. Please try again later."
