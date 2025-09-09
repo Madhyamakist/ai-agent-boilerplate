@@ -23,7 +23,7 @@ jobs:
           gcloud compute instances add-metadata ${{secrets.GCP_VM_INSTANCE_NAME}} \
             --zone=${{secrets.GCP_ZONE}} \
             --project=${{secrets.GCP_PROJECT}} \
-            --metadata-from-file=startup-script=./scirpts/update_app.sh \
+            --metadata-from-file=startup-script=./scripts/update_app.sh \
             --metadata=BRANCH_NAME=${GITHUB_REF#refs/heads/}
 
           gcloud compute instances stop ${{secrets.GCP_VM_INSTANCE_NAME}} --zone=${{secrets.GCP_ZONE}} --project=${{secrets.GCP_PROJECT}}

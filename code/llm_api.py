@@ -73,51 +73,21 @@ def get_groq_response(input_text, session_id, requesttype):
     bot_response = response.content
 
 
-    # Update request_type for the new messages in this session
-    _update_session_request_type(session_id, requesttype)
-
-
     # Handle conversation processing
     # Process conversation asynchronously to avoid blocking the response
-    _process_conversation_async(input_text, session_id)
+    _process_conversation_async(input_text, session_id, requesttype)
 
 
 
     return bot_response
 
 
-def _update_session_request_type(session_id, requesttype):
-    """
-    Update request_type only for messages added in the last few seconds
-    to avoid changing old conversation context
-    """
-    try:
-        with sync_connection.cursor() as cur:
-            cur.execute(f"""
-                UPDATE {table_name} 
-                SET request_type = %s 
-                WHERE session_id = %s 
-                AND (request_type IS NULL OR request_type = '')
-            """, (requesttype, session_id))
-            
-            rows_updated = cur.rowcount
-            sync_connection.commit()
-            
-            if rows_updated > 0:
-                print(f"Updated request_type to '{requesttype}' for {rows_updated} recent messages in session: {session_id}")
-                
-    except Exception as e:
-        print(f"Error updating request_type: {e}")
-        sync_connection.rollback()
 
-
-
-
-def _process_conversation_async(input_text, session_id):
+def _process_conversation_async(input_text, session_id, requesttype):
     """Process conversation asynchronously using ThreadPoolExecutor."""
     def process_in_background():
         try:
-            process_conversation(input_text, session_id)
+            process_conversation(input_text, session_id, requesttype)
             print("[LLM_API] Async conversation processing completed")
         except Exception as processing_error:
             print(f"[LLM_API] Warning: Async conversation processing failed: {processing_error}")

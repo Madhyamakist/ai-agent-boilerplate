@@ -40,37 +40,6 @@ def ensure_chat_table_exists(sync_connection, table_name):
     """
     PostgresChatMessageHistory.create_tables(sync_connection, table_name)
     print(f"Table '{table_name}' created or verified.")
-        # Now add the request_type column if it doesn't exist
-    try:
-        with sync_connection.cursor() as cur:
-            # Check if request_type column exists
-            cur.execute("""
-                SELECT column_name 
-                FROM information_schema.columns 
-                WHERE table_name = %s AND column_name = 'request_type'
-            """, (table_name,))
-            
-            if not cur.fetchone():
-                # Add request_type column
-                cur.execute(f"""
-                    ALTER TABLE {table_name} 
-                    ADD COLUMN request_type VARCHAR(50)
-                """)
-                
-                # Add index for better query performance
-                cur.execute(f"""
-                    CREATE INDEX IF NOT EXISTS idx_{table_name}_request_type 
-                    ON {table_name}(request_type)
-                """)
-                
-                sync_connection.commit()
-                print(f"Added 'request_type' column to '{table_name}' table.")
-            else:
-                print(f"Column 'request_type' already exists in '{table_name}' table.")
-                
-    except Exception as e:
-        print(f"Error adding request_type column: {e}")
-        sync_connection.rollback()
 
 
 def ensure_summaries_table_exists(sync_connection):
@@ -85,6 +54,10 @@ def ensure_summaries_table_exists(sync_connection):
                 id SERIAL PRIMARY KEY,
                 session_id TEXT NOT NULL,
                 contact_name TEXT,
+                email TEXT,
+                mobile TEXT,
+                country Text,
+                request_type TEXT,
                 created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
                 metadata JSONB DEFAULT '{}',
                 
@@ -102,6 +75,15 @@ def ensure_summaries_table_exists(sync_connection):
             """
             
             cur.execute(create_table_query)
+
+            cur.execute("ALTER TABLE chat_info ADD COLUMN IF NOT EXISTS contact_name TEXT;")
+            cur.execute("ALTER TABLE chat_info ADD COLUMN IF NOT EXISTS email TEXT;")
+            cur.execute("ALTER TABLE chat_info ADD COLUMN IF NOT EXISTS country TEXT;")
+            cur.execute("ALTER TABLE chat_info ADD COLUMN IF NOT EXISTS mobile TEXT;")
+            cur.execute("ALTER TABLE chat_info ADD COLUMN IF NOT EXISTS requesttype TEXT;")
+            cur.execute("ALTER TABLE chat_info ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP;")
+            cur.execute("ALTER TABLE chat_info ADD COLUMN IF NOT EXISTS metadata JSONB DEFAULT '{}'::jsonb;")
+
             sync_connection.commit()
             print("Table 'chat_info' created/verified successfully.")
             
