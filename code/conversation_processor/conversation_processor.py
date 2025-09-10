@@ -7,7 +7,7 @@ from langchain.schema import SystemMessage, HumanMessage, AIMessage
 from system_prompt import get_name_prompt, get_info_prompt
 
 
-def _update_session_request_type(session_id, requesttype):
+def _update_session_request_type(session_id, request_type):
     """
     Update request_type only for messages added in the last few seconds
     to avoid changing old conversation context
@@ -19,19 +19,19 @@ def _update_session_request_type(session_id, requesttype):
                 SET request_type = %s 
                 WHERE session_id = %s 
                 AND (request_type IS NULL OR request_type = '')
-            """, (requesttype, session_id))
+            """, (request_type, session_id))
             
             rows_updated = cur.rowcount
             sync_connection.commit()
             
             if rows_updated > 0:
-                print(f"Updated request_type to '{requesttype}' for {rows_updated} recent messages in session: {session_id}")
+                print(f"Updated request_type to '{request_type}' for {rows_updated} recent messages in session: {session_id}")
                 
     except Exception as e:
         print(f"Error updating request_type: {e}")
         sync_connection.rollback()
 
-def process_conversation(user_input, session_id, requesttype):
+def process_conversation(user_input, session_id, request_type):
     """
     Main hook function that processes each conversation exchange.
     Uses LLM to detect if user provided their contact info in the current input.
@@ -40,15 +40,15 @@ def process_conversation(user_input, session_id, requesttype):
     try:
         print(f"[PROCESSOR] Processing session {session_id} for contact info detection...")  
         # Update request_type for the new messages in this session
-        _update_session_request_type(session_id, requesttype)
+        _update_session_request_type(session_id, request_type)
         # Choose llm function based on request type
-        info_data = detect_info_with_llm(user_input, requesttype)
+        info_data = detect_info_with_llm(user_input, request_type)
         
-        if info_data and has_valid_info(info_data, requesttype):
+        if info_data and has_valid_info(info_data, request_type):
             print(f"[PROCESSOR] info detected in session {session_id}")
                 
             # Save information to database
-            save_info_to_database(session_id, info_data, user_input, requesttype)
+            save_info_to_database(session_id, info_data, user_input, request_type)
             print(f"[PROCESSOR] information saved for session {session_id}. Future processing will be skipped.")
         else:
             print(f"[PROCESSOR] No Info detected in current message for session {session_id}")
@@ -58,7 +58,7 @@ def process_conversation(user_input, session_id, requesttype):
         print(f"[PROCESSOR] Error in conversation processor: {e}")
         # Don't let processing errors break the chat flow
 
-def has_valid_info(info_data, requesttype):
+def has_valid_info(info_data, request_type):
     """
     Check if the extracted info contains the at least one required fields.
     
@@ -71,14 +71,14 @@ def has_valid_info(info_data, requesttype):
     if not info_data:
         return False
         
-    if requesttype == 'sales':
+    if request_type == 'sales':
         # For sales, we need at least one of the key fields to be detected
         return any(info_data.get(f, "").strip() for f in ["contact_name", "email", "mobile", "country"])
     else:
         # For non-sales, just check contact)name
         return info_data.get('name_detected', False) and info_data.get('contact_name', '').strip()
 
-def detect_info_with_llm(message, requesttype):
+def detect_info_with_llm(message, request_type):
     """
     Use LLM to detect if the user provided their contact info in the message.
     
@@ -93,7 +93,7 @@ def detect_info_with_llm(message, requesttype):
         llm = ChatGroq(groq_api_key=GROQ_API_KEY, model=GROQ_MODEL_NAME)
 
         # prompt based on request type
-        if requesttype == "sales":
+        if request_type == "sales":
             prompt_content = get_info_prompt().format(message=message)
         else:
             prompt_content = get_name_prompt().format(message=message)
@@ -120,7 +120,7 @@ def detect_info_with_llm(message, requesttype):
         print(f"[INFO_DETECTION] Error in LLM contact info detection: {e}")
         return {"contact_name": "", "email": "", "mobile": "", "country": ""}
     
-def save_info_to_database(session_id, info_data, original_message, requesttype):
+def save_info_to_database(session_id, info_data, original_message, request_type):
     """
     Save detected info to chat_info table.
     
@@ -128,7 +128,7 @@ def save_info_to_database(session_id, info_data, original_message, requesttype):
         session_id (str): Session identifier
         info_data: Extracted info
         original_message (str): The original message where contact info was detected
-        requesttype: type of request
+        request_type: type of request
     """
     try:
         # Ensure clean transaction state
@@ -138,7 +138,7 @@ def save_info_to_database(session_id, info_data, original_message, requesttype):
 
             metadata = {
                 "info_detected_from_message": original_message,
-                "detection_method": requesttype,
+                "detection_method": request_type,
                 "detection_timestamp": datetime.now().isoformat()
             }
         
@@ -157,7 +157,7 @@ def save_info_to_database(session_id, info_data, original_message, requesttype):
                 email,
                 country,
                 mobile,
-                requesttype,
+                request_type,
                 metadata,
                 created_at
             ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
@@ -179,7 +179,7 @@ def save_info_to_database(session_id, info_data, original_message, requesttype):
                     WHEN EXCLUDED.mobile IS NOT NULL THEN EXCLUDED.mobile 
                     ELSE chat_info.mobile 
                 END,
-                requesttype = EXCLUDED.requesttype,
+                request_type = EXCLUDED.request_type,
                 metadata = EXCLUDED.metadata,
                 created_at = CASE 
                     WHEN chat_info.created_at IS NULL THEN EXCLUDED.created_at 
@@ -193,7 +193,7 @@ def save_info_to_database(session_id, info_data, original_message, requesttype):
                 email,
                 country,
                 mobile,
-                requesttype,
+                request_type,
                 json.dumps(metadata),
                 datetime.now()
             ))

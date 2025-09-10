@@ -21,10 +21,10 @@ def get_session_history(session_id):
     )
 
 
-def get_groq_response(input_text, session_id, requesttype):
+def get_groq_response(input_text, session_id, request_type):
     
     # Choose prompt based on request type
-    if requesttype == 'sales':
+    if request_type == 'sales':
         system_prompt = get_sales_prompt()
     else:
         system_prompt = get_generic_prompt()
@@ -75,7 +75,7 @@ def get_groq_response(input_text, session_id, requesttype):
 
     # Handle conversation processing
     # Process conversation asynchronously to avoid blocking the response
-    _process_conversation_async(input_text, session_id, requesttype)
+    _process_conversation_async(input_text, session_id, request_type)
 
 
 
@@ -83,11 +83,11 @@ def get_groq_response(input_text, session_id, requesttype):
 
 
 
-def _process_conversation_async(input_text, session_id, requesttype):
+def _process_conversation_async(input_text, session_id, request_type):
     """Process conversation asynchronously using ThreadPoolExecutor."""
     def process_in_background():
         try:
-            process_conversation(input_text, session_id, requesttype)
+            process_conversation(input_text, session_id, request_type)
             print("[LLM_API] Async conversation processing completed")
         except Exception as processing_error:
             print(f"[LLM_API] Warning: Async conversation processing failed: {processing_error}")

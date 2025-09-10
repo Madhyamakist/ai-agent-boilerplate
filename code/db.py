@@ -80,7 +80,7 @@ def ensure_summaries_table_exists(sync_connection):
             cur.execute("ALTER TABLE chat_info ADD COLUMN IF NOT EXISTS email TEXT;")
             cur.execute("ALTER TABLE chat_info ADD COLUMN IF NOT EXISTS country TEXT;")
             cur.execute("ALTER TABLE chat_info ADD COLUMN IF NOT EXISTS mobile TEXT;")
-            cur.execute("ALTER TABLE chat_info ADD COLUMN IF NOT EXISTS requesttype TEXT;")
+            cur.execute("ALTER TABLE chat_info ADD COLUMN IF NOT EXISTS request_type TEXT;")
             cur.execute("ALTER TABLE chat_info ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP;")
             cur.execute("ALTER TABLE chat_info ADD COLUMN IF NOT EXISTS metadata JSONB DEFAULT '{}'::jsonb;")
 
