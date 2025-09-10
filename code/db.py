@@ -56,7 +56,7 @@ def ensure_summaries_table_exists(sync_connection):
                 contact_name TEXT,
                 email TEXT,
                 mobile TEXT,
-                country Text,
+                country TEXT,
                 request_type TEXT,
                 created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
                 metadata JSONB DEFAULT '{}',

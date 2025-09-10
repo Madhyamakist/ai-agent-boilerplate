@@ -6,30 +6,36 @@ from config import GROQ_API_KEY, GROQ_MODEL_NAME
 from langchain.schema import SystemMessage, HumanMessage, AIMessage
 from system_prompt import get_name_prompt, get_info_prompt
 
-
 def _update_session_request_type(session_id, request_type):
     """
-    Update request_type only for messages added in the last few seconds
-    to avoid changing old conversation context
+    Insert a new chat_info row with (session_id, request_type)
+    only if session_id does not already exist.
+    If the session_id exists, do nothing.
     """
     try:
         with sync_connection.cursor() as cur:
-            cur.execute(f"""
-                UPDATE chat_info
-                SET request_type = %s 
-                WHERE session_id = %s 
-                AND (request_type IS NULL OR request_type = '')
-            """, (request_type, session_id))
-            
-            rows_updated = cur.rowcount
+            insert_query = """
+            INSERT INTO chat_info (
+                session_id,
+                request_type
+            ) VALUES (%s, %s)
+            ON CONFLICT (session_id) DO NOTHING
+            """
+
+            cur.execute(insert_query, (session_id, request_type))
             sync_connection.commit()
-            
-            if rows_updated > 0:
-                print(f"Updated request_type to '{request_type}' for {rows_updated} recent messages in session: {session_id}")
-                
+
+            if cur.rowcount and cur.rowcount > 0:
+                print(f"[CREATE] Inserted new chat_info for session_id={session_id} with request_type='{request_type}'")
+            else:
+                print(f"[CREATE] session_id={session_id} already exists — no action taken")
+
     except Exception as e:
-        print(f"Error updating request_type: {e}")
-        sync_connection.rollback()
+        print(f"Error inserting request_type row: {e}")
+        try:
+            sync_connection.rollback()
+        except Exception:
+            pass
 
 def process_conversation(user_input, session_id, request_type):
     """
