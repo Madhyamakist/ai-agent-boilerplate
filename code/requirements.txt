@@ -7,3 +7,4 @@ langchain-community
 langchain-postgres
 psycopg[binary,pool]
 langchain-core
+flask_swagger_ui

@@ -4,9 +4,24 @@ from llm_api import get_groq_response
 from validators import validate_input
 from config import DEBUG
 from flask_cors import CORS 
+from flask_swagger_ui import get_swaggerui_blueprint
 
 app = Flask(__name__)
 CORS(app)
+
+# Swagger UI setup
+SWAGGER_URL = '/docs'  # URL for exposing Swagger UI
+API_URL = '/static/swagger.yaml'  # Path to your swagger file
+
+swaggerui_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={
+        'app_name': "Chat API"
+    }
+)
+
+app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 
 #render HTML frontend
 @app.route('/')
