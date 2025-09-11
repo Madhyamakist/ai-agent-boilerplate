@@ -42,9 +42,6 @@ def ensure_chat_table_exists(sync_connection, table_name):
     print(f"Table '{table_name}' created or verified.")
 
 
-
-
-
 def ensure_summaries_table_exists(sync_connection):
     """
     Create the chat_info table for storing lead information and summaries.
@@ -57,6 +54,10 @@ def ensure_summaries_table_exists(sync_connection):
                 id SERIAL PRIMARY KEY,
                 session_id TEXT NOT NULL,
                 contact_name TEXT,
+                email TEXT,
+                mobile TEXT,
+                country TEXT,
+                request_type TEXT,
                 created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
                 metadata JSONB DEFAULT '{}',
                 
@@ -74,6 +75,15 @@ def ensure_summaries_table_exists(sync_connection):
             """
             
             cur.execute(create_table_query)
+
+            cur.execute("ALTER TABLE chat_info ADD COLUMN IF NOT EXISTS contact_name TEXT;")
+            cur.execute("ALTER TABLE chat_info ADD COLUMN IF NOT EXISTS email TEXT;")
+            cur.execute("ALTER TABLE chat_info ADD COLUMN IF NOT EXISTS country TEXT;")
+            cur.execute("ALTER TABLE chat_info ADD COLUMN IF NOT EXISTS mobile TEXT;")
+            cur.execute("ALTER TABLE chat_info ADD COLUMN IF NOT EXISTS request_type TEXT;")
+            cur.execute("ALTER TABLE chat_info ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP;")
+            cur.execute("ALTER TABLE chat_info ADD COLUMN IF NOT EXISTS metadata JSONB DEFAULT '{}'::jsonb;")
+
             sync_connection.commit()
             print("Table 'chat_info' created/verified successfully.")
             

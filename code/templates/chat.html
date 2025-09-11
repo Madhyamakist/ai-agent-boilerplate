@@ -53,6 +53,7 @@
 <script>
 
   const sessionId = crypto.randomUUID();
+  const request_type = "generic";
 
   document.getElementById('chatForm').onsubmit = async function(e) {
     e.preventDefault();
@@ -68,7 +69,7 @@
       const response = await fetch('/chat', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({input: userMsg,session_id: sessionId }) // include session id in payload
+        body: JSON.stringify({input: userMsg,session_id: sessionId, request_type: request_type }) // include session id in payload
         });
 
       const data = await response.json();

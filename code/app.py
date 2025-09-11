@@ -41,13 +41,17 @@ def chat_api():
     data = request.get_json()
     input = data.get('input', '')
     session_id = data.get('session_id')
+    request_type = data.get('request_type')
     # Input Validation
-    is_valid, message = validate_input(input)
+    is_valid, message = validate_input(input, request_type)
+
     if not is_valid:
         return jsonify({'success': False, 'error': message}), 400
+    request_type = message 
+
     # Get response from LLM
     try:
-        bot_response = get_groq_response(input.strip(), session_id)
+        bot_response = get_groq_response(input.strip(), session_id, request_type)
         return jsonify({'success': True, 'response': bot_response})
     except Exception as e:
         print(f"Error during LLM call: {e}")

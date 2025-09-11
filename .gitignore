@@ -2,6 +2,5 @@
 __pycache__/
 *.py[codz]
 *$py.class
-
 # Virtual Environment
 venv/
