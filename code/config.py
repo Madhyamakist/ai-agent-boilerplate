@@ -21,7 +21,7 @@ table_name  = 'chat_table'
 # Default connection for local PostgreSQL instance
 DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://postgres:password@localhost:5432/')
 DATABASE_URL = DATABASE_URL + db_name
-
+first_chat_message = "Hi, Welcome to smallTech 👋. I'm here to help with any IT-related questions or concerns you might bring. What brings you to our website today?"
 class agent_type(str, Enum):
     SALES = "sales"
     GENERIC = "generic"
