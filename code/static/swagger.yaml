@@ -45,6 +45,10 @@ paths:
                   type: string
                   description: Session identifier for maintaining context. **Must be a valid UUID.**
                   example: "0b3cf7e1-5b30-46df-b018-85ca4dbd4391"
+                request_type:
+                  type: string
+                  description: The type of the query/agent required
+                  example: "sales"
       responses:
         "200":
           description: Successful response from the chatbot

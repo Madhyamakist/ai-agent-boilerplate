@@ -6,6 +6,33 @@ from config import GROQ_API_KEY, GROQ_MODEL_NAME
 from langchain.schema import SystemMessage, HumanMessage, AIMessage
 from system_prompt import get_name_prompt, get_info_prompt
 
+def process_conversation(user_input, session_id, request_type):
+    """
+    Main hook function that processes each conversation exchange.
+    Uses LLM to detect if user provided their contact info in the current input.
+    """
+
+    try:
+        print(f"[PROCESSOR] Processing session {session_id} for contact info detection...")  
+        # Update request_type for the new messages in this session
+        _update_session_request_type(session_id, request_type)
+        # Choose llm function based on request type
+        info_data = _detect_info_with_llm(user_input, request_type)
+        
+        if info_data and _has_valid_info(info_data, request_type):
+            print(f"[PROCESSOR] info detected in session {session_id}")
+                
+            # Save information to database
+            _save_info_to_database(session_id, info_data, user_input, request_type)
+            print(f"[PROCESSOR] information saved for session {session_id}. Future processing will be skipped.")
+        else:
+            print(f"[PROCESSOR] No Info detected in current message for session {session_id}")
+
+        
+    except Exception as e:
+        print(f"[PROCESSOR] Error in conversation processor: {e}")
+        # Don't let processing errors break the chat flow
+
 def _update_session_request_type(session_id, request_type):
     """
     Insert a new chat_info row with (session_id, request_type)
@@ -37,34 +64,7 @@ def _update_session_request_type(session_id, request_type):
         except Exception:
             pass
 
-def process_conversation(user_input, session_id, request_type):
-    """
-    Main hook function that processes each conversation exchange.
-    Uses LLM to detect if user provided their contact info in the current input.
-    """
-
-    try:
-        print(f"[PROCESSOR] Processing session {session_id} for contact info detection...")  
-        # Update request_type for the new messages in this session
-        _update_session_request_type(session_id, request_type)
-        # Choose llm function based on request type
-        info_data = detect_info_with_llm(user_input, request_type)
-        
-        if info_data and has_valid_info(info_data, request_type):
-            print(f"[PROCESSOR] info detected in session {session_id}")
-                
-            # Save information to database
-            save_info_to_database(session_id, info_data, user_input, request_type)
-            print(f"[PROCESSOR] information saved for session {session_id}. Future processing will be skipped.")
-        else:
-            print(f"[PROCESSOR] No Info detected in current message for session {session_id}")
-
-        
-    except Exception as e:
-        print(f"[PROCESSOR] Error in conversation processor: {e}")
-        # Don't let processing errors break the chat flow
-
-def has_valid_info(info_data, request_type):
+def _has_valid_info(info_data, request_type):
     """
     Check if the extracted info contains the at least one required fields.
     
@@ -84,7 +84,7 @@ def has_valid_info(info_data, request_type):
         # For non-sales, just check contact)name
         return info_data.get('name_detected', False) and info_data.get('contact_name', '').strip()
 
-def detect_info_with_llm(message, request_type):
+def _detect_info_with_llm(message, request_type):
     """
     Use LLM to detect if the user provided their contact info in the message.
     
@@ -126,7 +126,7 @@ def detect_info_with_llm(message, request_type):
         print(f"[INFO_DETECTION] Error in LLM contact info detection: {e}")
         return {"contact_name": "", "email": "", "mobile": "", "country": ""}
     
-def save_info_to_database(session_id, info_data, original_message, request_type):
+def _save_info_to_database(session_id, info_data, original_message, request_type):
     """
     Save detected info to chat_info table.
     
