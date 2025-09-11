@@ -54,7 +54,38 @@
 
   const sessionId = crypto.randomUUID();
   const request_type = "generic";
+  const chatbox = document.getElementById('chatbox');
 
+  // Function to render history messages
+  function renderHistory(messages) {
+    chatbox.innerHTML = ''; // clear existing
+    messages.forEach(msg => {
+      if (msg.type === "human") {
+        chatbox.innerHTML += `<b>You:</b> ${msg.content}<br>`;
+      } else if (msg.type === "ai") {
+        chatbox.innerHTML += `<b>Bot:</b> ${msg.content}<br>`;
+      }
+    });
+    chatbox.scrollTop = chatbox.scrollHeight;
+  }
+
+  // Load history on page load/refresh
+  async function loadHistory() {
+    try {
+      const res = await fetch(`/history?session_id=${sessionId}`);
+      const data = await res.json();
+
+      if (res.status === 200 || res.status === 201) {
+        renderHistory(data.history);
+      } else {
+        chatbox.innerHTML = `<span style="color:red;"><b>Error:</b> Could not load history (${res.status})</span>`;
+      }
+    } catch (err) {
+      chatbox.innerHTML = `<span style="color:red;"><b>Error:</b> Network issue loading history.</span>`;
+    }
+  }
+
+  // Handle form submission (send message)
   document.getElementById('chatForm').onsubmit = async function(e) {
     e.preventDefault();
     const input = document.getElementById('input');
@@ -63,7 +94,7 @@
       alert("Please enter a message before sending.");
       return;
     }
-    document.getElementById('chatbox').innerHTML += `<b>You:</b> ${userMsg}<br>`;
+    chatbox.innerHTML += `<b>You:</b> ${userMsg}<br>`;
     input.value = '';
     try {
       const response = await fetch('/chat', {
@@ -75,16 +106,19 @@
       const data = await response.json();
       
       if (data.success) {
-        document.getElementById('chatbox').innerHTML += `<b>Bot:</b> ${data.response}<br>`;
+        chatbox.innerHTML += `<b>Bot:</b> ${data.response}<br>`;
       } else {
         // Show the friendly error message
-        document.getElementById('chatbox').innerHTML += `<span style="color: red;"><b>Error:</b> ${data.error}</span><br>`;
+        chatbox.innerHTML += `<span style="color: red;"><b>Error:</b> ${data.error}</span><br>`;
       }
     } catch (err) {
-      document.getElementById('chatbox').innerHTML += `<span style="color: red;"><b>Error:</b> Network or server issue. Please try again later.</span><br>`;
+      chatbox.innerHTML += `<span style="color: red;"><b>Error:</b> Network or server issue. Please try again later.</span><br>`;
     }
-    document.getElementById('chatbox').scrollTop = document.getElementById('chatbox').scrollHeight;
+    chatbox.scrollTop = chatbox.scrollHeight;
   };
+
+  // Call loadHistory when page loads
+  window.onload = loadHistory;
 
   
 </script>

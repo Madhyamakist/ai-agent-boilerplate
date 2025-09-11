@@ -5,6 +5,8 @@ from validators import validate_input
 from config import DEBUG
 from flask_cors import CORS 
 from flask_swagger_ui import get_swaggerui_blueprint
+from get_history.validate_session_id import validate_session_id
+from get_history.get_history import get_history
 
 app = Flask(__name__)
 CORS(app)
@@ -31,6 +33,18 @@ def chat():
 @app.route("/health", methods=["GET"])
 def hello():
     return jsonify({"message": "Hello World"})
+
+# History API to load previous messages while loading the page
+@app.route("/history", methods=["GET"])
+def history_endpoint():
+    session_id = request.args.get("session_id")
+    # Validate
+    is_valid, message, status = validate_session_id(session_id)
+    if not is_valid:
+        return jsonify({"error": message}), status
+    # Continue if valid
+    history_data, status = get_history(session_id)
+    return jsonify(history_data), status
 
 #Rendering response
 # chat_api is a Flask route function defined that acts as the backend API endpoint for chat exchanges. It is the API endpoint your frontend calls to send user messages and receive chatbot responses.
