@@ -2,7 +2,7 @@ import json
 from datetime import datetime
 from db import sync_connection
 from langchain_groq import ChatGroq
-from config import GROQ_API_KEY, GROQ_MODEL_NAME
+from config import GROQ_API_KEY, GROQ_MODEL_NAME, agent_type
 from langchain.schema import SystemMessage, HumanMessage, AIMessage
 from system_prompt import get_name_prompt, get_info_prompt
 
@@ -24,7 +24,7 @@ def process_conversation(user_input, session_id, request_type):
                 
             # Save information to database
             _save_info_to_database(session_id, info_data, user_input, request_type)
-            print(f"[PROCESSOR] information saved for session {session_id}. Future processing will be skipped.")
+            print(f"[PROCESSOR] information saved for session {session_id}.")
         else:
             print(f"[PROCESSOR] No Info detected in current message for session {session_id}")
 
@@ -77,7 +77,7 @@ def _has_valid_info(info_data, request_type):
     if not info_data:
         return False
         
-    if request_type == 'sales':
+    if request_type == agent_type.SALES:
         # For sales, we need at least one of the key fields to be detected
         return any(info_data.get(f, "").strip() for f in ["contact_name", "email", "mobile", "country"])
     else:
@@ -99,7 +99,7 @@ def _detect_info_with_llm(message, request_type):
         llm = ChatGroq(groq_api_key=GROQ_API_KEY, model=GROQ_MODEL_NAME)
 
         # prompt based on request type
-        if request_type == "sales":
+        if request_type == agent_type.SALES:
             prompt_content = get_info_prompt().format(message=message)
         else:
             prompt_content = get_name_prompt().format(message=message)

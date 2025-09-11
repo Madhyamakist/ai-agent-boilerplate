@@ -43,12 +43,11 @@ def chat_api():
     session_id = data.get('session_id')
     request_type = data.get('request_type')
     # Input Validation
-    is_valid, message = validate_input(input)
+    is_valid, message = validate_input(input, request_type)
+
     if not is_valid:
         return jsonify({'success': False, 'error': message}), 400
-    # Assign "generic" if "request_type" is None, an empty string, or all spaces.
-    if not request_type or request_type.strip() == '':
-        request_type = "generic" 
+    request_type = message 
 
     # Get response from LLM
     try:

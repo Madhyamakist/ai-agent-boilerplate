@@ -1,6 +1,7 @@
 # Add other constants as needed
 import os
 from dotenv import load_dotenv
+from enum import Enum
 load_dotenv()
 # Flask settings
 DEBUG = os.getenv("DEBUG", "False").lower() == "true"
@@ -20,3 +21,7 @@ table_name  = 'chat_table'
 # Default connection for local PostgreSQL instance
 DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://postgres:password@localhost:5432/')
 DATABASE_URL = DATABASE_URL + db_name
+
+class agent_type(str, Enum):
+    SALES = "sales"
+    GENERIC = "generic"

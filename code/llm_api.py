@@ -2,7 +2,7 @@ import os
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 from langchain_groq import ChatGroq
-from config import GROQ_API_KEY, GROQ_MODEL_NAME, table_name
+from config import GROQ_API_KEY, GROQ_MODEL_NAME, table_name, agent_type
 from system_prompt import get_sales_prompt, get_generic_prompt
 from langchain_postgres import PostgresChatMessageHistory
 from db import sync_connection
@@ -24,7 +24,7 @@ def get_session_history(session_id):
 def get_groq_response(input_text, session_id, request_type):
     
     # Choose prompt based on request type
-    if request_type == 'sales':
+    if request_type == agent_type.SALES:
         system_prompt = get_sales_prompt()
     else:
         system_prompt = get_generic_prompt()
