@@ -1,3 +1,4 @@
+from http import HTTPStatus
 from config import max_input_length, agent_type
 import uuid
 
@@ -30,14 +31,14 @@ def validate_session_id(session_id):
     """Validate session_id and return chat history or create new session."""
     try:
         if session_id is None:
-            return False, "session_id is required", 400
+            return False, "session_id is required", HTTPStatus.BAD_REQUEST
 
         # Validate UUID format
         if not is_valid_uuid(session_id):
-            return False, "Invalid session_id format", 400
+            return False, "Invalid session_id format", HTTPStatus.BAD_REQUEST
         
-        return True, "Valid session_id", 200
+        return True, "Valid session_id", HTTPStatus.OK
 
     except Exception as e:
         print(f"[Error] {e}")
-        return False, "Internal Server Error", 500
+        return False, "Internal Server Error", HTTPStatus.INTERNAL_SERVER_ERROR

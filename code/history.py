@@ -1,3 +1,4 @@
+from http import HTTPStatus
 import uuid
 from db import sync_connection, table_name
 from langchain_postgres import PostgresChatMessageHistory
@@ -25,11 +26,11 @@ def get_history(session_id: str):
     """Retrieve chat history for a session_id as a list of dicts."""
     try:
         history = get_session_history(session_id)
-        status = 200
+        status = HTTPStatus.OK
         if not history.messages:
             # session exists
             history.add_ai_message(first_chat_message)
-            status = 201
+            status = HTTPStatus.CREATED
         messages = _message_mapping(history)
 
         return {
@@ -41,5 +42,5 @@ def get_history(session_id: str):
         return {
             "error": "Network issue loading history.",
             "session_id": session_id
-        }, 500
+        }, HTTPStatus.INTERNAL_SERVER_ERROR
 

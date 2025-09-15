@@ -1,3 +1,4 @@
+from http import HTTPStatus
 import os
 from flask import Flask, render_template, request, jsonify
 from llm_api import get_groq_response
@@ -5,7 +6,6 @@ from validators import validate_input, validate_session_id
 from config import DEBUG
 from flask_cors import CORS 
 from flask_swagger_ui import get_swaggerui_blueprint
-
 from history import get_history
 
 app = Flask(__name__)
@@ -60,7 +60,7 @@ def chat_api():
     is_valid, message = validate_input(input, request_type)
 
     if not is_valid:
-        return jsonify({'success': False, 'error': message}), 400
+        return jsonify({'success': False, 'error': message}), HTTPStatus.BAD_REQUEST
     request_type = message 
 
     # Get response from LLM
@@ -71,7 +71,7 @@ def chat_api():
         print(f"Error during LLM call: {e}")
         return jsonify({
             'success': False,
-            'error': "Sorry, something went wrong while processing your message. Please try again later."}), 500
+            'error': "Sorry, something went wrong while processing your message. Please try again later."}), HTTPStatus.INTERNAL_SERVER_ERROR
 
 if __name__ == '__main__':
     app.run(debug=DEBUG,port=5000)
