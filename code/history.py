@@ -1,10 +1,18 @@
 import uuid
 from db import sync_connection, table_name
 from langchain_postgres import PostgresChatMessageHistory
-from llm_api import get_session_history
 from config import first_chat_message
 
-def _extract_messages(history):
+
+# Database setup 
+def get_session_history(session_id):
+    return PostgresChatMessageHistory(
+        table_name,
+        session_id,
+        sync_connection=sync_connection
+    )
+
+def _message_mapping(history):
     messages = []
     for msg in history.messages:
         messages.append({
@@ -22,7 +30,7 @@ def get_history(session_id: str):
             # session exists
             history.add_ai_message(first_chat_message)
             status = 201
-        messages = _extract_messages(history)
+        messages = _message_mapping(history)
 
         return {
             "session_id": session_id,

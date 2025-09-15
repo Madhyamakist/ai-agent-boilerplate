@@ -4,21 +4,11 @@ from concurrent.futures import ThreadPoolExecutor
 from langchain_groq import ChatGroq
 from config import GROQ_API_KEY, GROQ_MODEL_NAME, table_name, agent_type
 from system_prompt import get_sales_prompt, get_generic_prompt
-from langchain_postgres import PostgresChatMessageHistory
 from db import sync_connection
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from conversation_processor.conversation_processor import process_conversation
-
-
-
-# Database setup 
-def get_session_history(session_id):
-    return PostgresChatMessageHistory(
-        table_name,
-        session_id,
-        sync_connection=sync_connection
-    )
+from history import get_session_history
 
 
 def get_groq_response(input_text, session_id, request_type):

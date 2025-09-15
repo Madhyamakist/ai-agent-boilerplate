@@ -1,12 +1,12 @@
 import os
 from flask import Flask, render_template, request, jsonify
 from llm_api import get_groq_response
-from validators import validate_input
+from validators import validate_input, validate_session_id
 from config import DEBUG
 from flask_cors import CORS 
 from flask_swagger_ui import get_swaggerui_blueprint
-from get_history.validate_session_id import validate_session_id
-from get_history.get_history import get_history
+
+from history import get_history
 
 app = Flask(__name__)
 CORS(app)
