@@ -39,9 +39,9 @@ def hello():
 def history_endpoint():
     session_id = request.args.get("session_id")
     # Validate
-    is_valid, message, status = validate_session_id(session_id)
-    if not is_valid:
-        return jsonify({"error": message}), status
+    result = validate_session_id(session_id)
+    if not result["is_valid"]:
+        return jsonify({"error": result["message"]}), result["status"]
     # Continue if valid
     history_data, status = get_history(session_id)
     return jsonify(history_data), status
@@ -57,11 +57,12 @@ def chat_api():
     session_id = data.get('session_id')
     request_type = data.get('request_type')
     # Input Validation
-    is_valid, message = validate_input(input, request_type)
 
-    if not is_valid:
-        return jsonify({'success': False, 'error': message}), HTTPStatus.BAD_REQUEST
-    request_type = message 
+    result = validate_input(input, request_type)
+
+    if not result["is_valid"]:
+        return jsonify({'success': False, 'error': result["message"]}), HTTPStatus.BAD_REQUEST
+    request_type = result["message"] 
 
     # Get response from LLM
     try:
