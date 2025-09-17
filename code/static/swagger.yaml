@@ -160,3 +160,170 @@ paths:
           description: Invalid session_id format
         '500':
           description: Server error
+  /leads:
+    get:
+      summary: Retrieve stored chat info
+      description: >
+        Fetch all chat info records stored in the database.  
+        Each record contains session details such as name, email, and mobile number.
+      responses:
+        "200":
+          description: Successfully retrieved chat info
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  chat_info:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        session_id:
+                          type: string
+                          description: Session identifier
+                          example: "0b3cf7e1-5b30-46df-b018-85ca4dbd4391"
+                        name:
+                          type: string
+                          description: Name of the user
+                          example: "Vivek Agarwal"
+                        email:
+                          type: string
+                          format: email
+                          description: User's email address
+                          example: "vivek@example.com"
+                        mobile_number:
+                          type: string
+                          description: User's mobile phone number
+                          example: "+91-9876543210"
+                        country:
+                          type: string
+                          description: User's country
+                          example: "India"
+                        status:
+                          type: string
+                          enum: [OPEN, CLOSED, QUALIFYING]
+                          description: Analyst status for that session id
+                          example: "OPEN"
+                        remarks:
+                          type: string
+                          description: Analyst's remark for that session id
+                          example: "Send a mail and waiting for a review"
+        "500":
+          description: Server error while fetching chat info
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Unable to fetch chat info. Please try again later."
+
+  /chat-info:
+    patch:
+      summary: Update lead status and remarks
+      description: >
+        Update the `status` and/or `remarks` of a lead identified by its `session_id`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - session_id
+              properties:
+                session_id:
+                  type: string
+                  description: Unique session identifier of the lead
+                  example: "0b3cf7e1-5b30-46df-b018-85ca4dbd4391"
+                status:
+                  type: string
+                  description: Updated status of the lead
+                  enum: [OPEN, IN_PROGRESS, CLOSED, FOLLOW_UP]
+                remarks:
+                  type: string
+                  description: Analyst's updated remarks
+            examples:
+              updateStatusOnly:
+                summary: Update only status
+                value:
+                  session_id: "0b3cf7e1-5b30-46df-b018-85ca4dbd4391"
+                  status: "CLOSED"
+              updateRemarksOnly:
+                summary: Update only remarks
+                value:
+                  session_id: "0b3cf7e1-5b30-46df-b018-85ca4dbd4391"
+                  remarks: "Sent follow-up email, awaiting response"
+              updateStatusAndRemarks:
+                summary: Update both status and remarks
+                value:
+                  session_id: "0b3cf7e1-5b30-46df-b018-85ca4dbd4391"
+                  status: "IN_PROGRESS"
+                  remarks: "Client called back, demo scheduled"
+      responses:
+        "200":
+          description: Lead updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Lead updated successfully."
+                  updated_lead:
+                    type: object
+                    properties:
+                      session_id:
+                        type: string
+                        example: "0b3cf7e1-5b30-46df-b018-85ca4dbd4391"
+                      status:
+                        type: string
+                        example: "IN_PROGRESS"
+                      remarks:
+                        type: string
+                        example: "Client called back, demo scheduled"
+        "400":
+          description: Invalid request payload
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: "Invalid status value provided."
+        "404":
+          description: Lead not found for the given session_id
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: "Lead not found."
+        "500":
+          description: Server error while updating lead
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: "Unable to update lead. Please try again later."
