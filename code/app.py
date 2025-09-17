@@ -1,10 +1,12 @@
+from http import HTTPStatus
 import os
 from flask import Flask, render_template, request, jsonify
 from llm_api import get_groq_response
-from validators import validate_input
+from validators import validate_input, validate_session_id
 from config import DEBUG
 from flask_cors import CORS 
 from flask_swagger_ui import get_swaggerui_blueprint
+from history import get_history
 
 app = Flask(__name__)
 CORS(app)
@@ -32,6 +34,18 @@ def chat():
 def hello():
     return jsonify({"message": "Hello World"})
 
+# History API to load previous messages while loading the page
+@app.route("/history", methods=["GET"])
+def history_endpoint():
+    session_id = request.args.get("session_id")
+    # Validate
+    result = validate_session_id(session_id)
+    if not result["is_valid"]:
+        return jsonify({"error": result["message"]}), result["status"]
+    # Continue if valid
+    history_data, status = get_history(session_id)
+    return jsonify(history_data), status
+
 #Rendering response
 # chat_api is a Flask route function defined that acts as the backend API endpoint for chat exchanges. It is the API endpoint your frontend calls to send user messages and receive chatbot responses.
 # It receives a JSON request containing the user's chat input from the frontend, validates the input, sends the validated input to the LLM, and returns a JSON response.
@@ -43,11 +57,12 @@ def chat_api():
     session_id = data.get('session_id')
     request_type = data.get('request_type')
     # Input Validation
-    is_valid, message = validate_input(input, request_type)
 
-    if not is_valid:
-        return jsonify({'success': False, 'error': message}), 400
-    request_type = message 
+    result = validate_input(input, request_type)
+
+    if not result["is_valid"]:
+        return jsonify({'success': False, 'error': result["message"]}), HTTPStatus.BAD_REQUEST
+    request_type = result["message"] 
 
     # Get response from LLM
     try:
@@ -57,7 +72,7 @@ def chat_api():
         print(f"Error during LLM call: {e}")
         return jsonify({
             'success': False,
-            'error': "Sorry, something went wrong while processing your message. Please try again later."}), 500
+            'error': "Sorry, something went wrong while processing your message. Please try again later."}), HTTPStatus.INTERNAL_SERVER_ERROR
 
 if __name__ == '__main__':
     app.run(debug=DEBUG,port=5000)
