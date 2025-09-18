@@ -7,6 +7,19 @@ servers:
   - url: https://api.smalltech.in
     description: Production server running on Google Cloud Platform (GCP)
 
+components:
+  schemas:
+    status:
+      type: string
+      description: >
+        Status of the lead.  
+        Allowed values:  
+        - OPEN → New lead, not yet processed
+        - CLOSE → Lead is closed  
+        - QUALIFYING → Lead is in process  
+      enum: [OPEN, CLOSED, QUALIFYING]
+      example: OPEN
+
 paths:
   /health:
     get:
@@ -239,9 +252,7 @@ paths:
                   description: Unique session identifier of the lead
                   example: "0b3cf7e1-5b30-46df-b018-85ca4dbd4391"
                 status:
-                  type: string
-                  description: Updated status of the lead
-                  enum: [OPEN, IN_PROGRESS, CLOSED, FOLLOW_UP]
+                  $ref: '#/components/schemas/status'
                 remarks:
                   type: string
                   description: Analyst's updated remarks
@@ -260,7 +271,7 @@ paths:
                 summary: Update both status and remarks
                 value:
                   session_id: "0b3cf7e1-5b30-46df-b018-85ca4dbd4391"
-                  status: "IN_PROGRESS"
+                  status: "QUALIFYING"
                   remarks: "Client called back, demo scheduled"
       responses:
         "200":
@@ -283,8 +294,7 @@ paths:
                         type: string
                         example: "0b3cf7e1-5b30-46df-b018-85ca4dbd4391"
                       status:
-                        type: string
-                        example: "IN_PROGRESS"
+                        $ref: '#/components/schemas/status'
                       remarks:
                         type: string
                         example: "Client called back, demo scheduled"
