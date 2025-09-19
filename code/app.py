@@ -7,6 +7,7 @@ from config import DEBUG
 from flask_cors import CORS 
 from flask_swagger_ui import get_swaggerui_blueprint
 from history import get_history
+from leads import leads
 
 app = Flask(__name__)
 CORS(app)
@@ -45,6 +46,19 @@ def history_endpoint():
     # Continue if valid
     history_data, status = get_history(session_id)
     return jsonify(history_data), status
+
+@app.route('/leads', methods=['GET'])
+def get_leads():
+    try:
+        leads, status = leads()
+        return jsonify({"leads":leads}), status
+    except Exception as e:
+        print(f"Error in get_leads endpoint: {e}")
+        return jsonify({
+            "error": "Unable to fetch chat info. Please try again later."
+        }), HTTPStatus.INTERNAL_SERVER_ERROR
+
+
 
 #Rendering response
 # chat_api is a Flask route function defined that acts as the backend API endpoint for chat exchanges. It is the API endpoint your frontend calls to send user messages and receive chatbot responses.
