@@ -2,13 +2,13 @@ from http import HTTPStatus
 import os
 from flask import Flask, render_template, request, jsonify
 from llm_api import get_groq_response
-from validators import validate_input, validate_session_id
+from validators import validate_input, validate_session_id, validate_update_data
 from config import DEBUG
 from flask_cors import CORS 
 from flask_swagger_ui import get_swaggerui_blueprint
 from history import get_history
 from leads import get_all_leads
-
+from leads_update import update_lead
 app = Flask(__name__)
 CORS(app)
 
@@ -58,7 +58,25 @@ def get_leads():
             "error": "Unable to fetch chat info. Please try again later."
         }), HTTPStatus.INTERNAL_SERVER_ERROR
 
+@app.route('/chat-info', methods=['PATCH'])
+def patch_updates():
+    try:
+        update_data = request.get_json()
+        session_id = update_data.get("session_id")
+        status = update_data.get("status")
+        remarks = update_data.get("remarks")
 
+        #validate update data
+        result = validate_update_data(update_data, session_id, status)
+        if not result["is_valid"]:
+            return jsonify({"error": result["message"]}), result["status"]
+        update_lead(session_id, status, remarks)
+        return jsonify({"sucess":True, "message":"Leads updated"}), HTTPStatus.OK
+    except Exception as e:
+        return jsonify({
+            "sucess": False,
+            "message": f"Unable to update lead. Please try again later. ({str(e)})"
+        }), HTTPStatus.INTERNAL_SERVER_ERROR
 
 #Rendering response
 # chat_api is a Flask route function defined that acts as the backend API endpoint for chat exchanges. It is the API endpoint your frontend calls to send user messages and receive chatbot responses.

@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from config import max_input_length, agent_type
+from config import max_input_length, agent_type , status_type
 import uuid
 
 def validate_input(input, request_type):
@@ -35,6 +35,19 @@ def validate_session_id(session_id):
         # Validate UUID format
         if not is_valid_uuid(session_id):
             return {"is_valid":False, "message":"Invalid session_id format", "status":HTTPStatus.BAD_REQUEST}
+        return {"is_valid":True, "message":"Valid session_id", "status":HTTPStatus.OK}
+
+    except Exception as e:
+        print(f"[Error] {e}")
+        return {"is_valid":False, "message":"Internal Server Error", "status":HTTPStatus.INTERNAL_SERVER_ERROR}
+    
+def validate_update_data(update_data, session_id, status):
+    """Validate status and remarks """
+    try:
+        if not update_data or not session_id:
+            return {"is_valid":False, "message":"session_id/data is required", "status":HTTPStatus.BAD_REQUEST}
+        if status and status not in status_type.__members__ and status not in [s.value for s in status_type]:
+            return {"is_valid":False, "message":"session_id is required", "status":HTTPStatus.BAD_REQUEST}
         return {"is_valid":True, "message":"Valid session_id", "status":HTTPStatus.OK}
 
     except Exception as e:

@@ -25,3 +25,9 @@ first_chat_message = "Hi, Welcome to smallTech 👋. I'm here to help with any I
 class agent_type(str, Enum):
     SALES = "sales"
     GENERIC = "generic"
+
+# Allowed statuses in dashboard
+class status_type(str, Enum):
+    OPEN = "OPEN"
+    CLOSED = "CLOSED"
+    QUALIFYING = "QUALIFYING"
