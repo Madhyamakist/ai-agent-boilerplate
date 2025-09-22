@@ -7,7 +7,7 @@ from config import DEBUG
 from flask_cors import CORS 
 from flask_swagger_ui import get_swaggerui_blueprint
 from history import get_history
-from leads import leads
+from leads import get_all_leads
 
 app = Flask(__name__)
 CORS(app)
@@ -50,8 +50,8 @@ def history_endpoint():
 @app.route('/leads', methods=['GET'])
 def get_leads():
     try:
-        leads, status = leads()
-        return jsonify({"leads":leads}), status
+        leads_data, status = get_all_leads()
+        return jsonify({"leads":leads_data}), status
     except Exception as e:
         print(f"Error in get_leads endpoint: {e}")
         return jsonify({

@@ -1,10 +1,9 @@
-from flask import Flask, jsonify
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Tuple
 from psycopg.rows import dict_row
-from db import sync_connection  # Assuming you already have this in your project
+from db import sync_connection  
 from http import HTTPStatus
 
-def leads() -> List[Dict[str, Any]]:
+def get_all_leads() -> Tuple[List[Dict[str, Any]], HTTPStatus]:
     """
     Retrieve all stored chat info records.
     """
