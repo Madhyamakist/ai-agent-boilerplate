@@ -4,3 +4,6 @@ __pycache__/
 *$py.class
 # Virtual Environment
 venv/
+test/test_report.html
+# Pytest cache
+.pytest_cache/

@@ -8,3 +8,6 @@ langchain-postgres
 psycopg[binary,pool]
 langchain-core
 flask_swagger_ui
+requests
+pytest
+pytest-html
