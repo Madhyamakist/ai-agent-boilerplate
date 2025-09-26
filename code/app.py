@@ -74,8 +74,8 @@ def patch_updates():
         return jsonify({"sucess":True, "message":"Leads updated"}), HTTPStatus.OK
     except Exception as e:
         return jsonify({
-            "sucess": False,
-            "message": f"Unable to update lead. Please try again later. ({str(e)})"
+            "success": False,
+            "error": f"Unable to update lead. Please try again later. ({str(e)})"
         }), HTTPStatus.INTERNAL_SERVER_ERROR
 
 #Rendering response

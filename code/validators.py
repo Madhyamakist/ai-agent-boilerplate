@@ -47,7 +47,7 @@ def validate_update_data(update_data, session_id, status):
         if not update_data or not session_id:
             return {"is_valid":False, "message":"session_id/data is required", "status":HTTPStatus.BAD_REQUEST}
         if status and status not in status_type.__members__ and status not in [s.value for s in status_type]:
-            return {"is_valid":False, "message":"session_id is required", "status":HTTPStatus.BAD_REQUEST}
+            return {"is_valid":False, "message":"Status not allowed", "status":HTTPStatus.BAD_REQUEST}
         return {"is_valid":True, "message":"Valid session_id", "status":HTTPStatus.OK}
 
     except Exception as e:
