@@ -1,5 +1,4 @@
-<!-- # This is temporary file, later replaed by Next.js frontend -->
-
+<!-- # This is temporary file, later replaced by Next.js frontend -->
 
 <!DOCTYPE html>
 <html>
@@ -40,6 +39,26 @@
     button:hover {
       background: #1761c7;
     }
+
+    /* Leads Table Styling */
+    #leadsSection {
+      margin-top: 20px;
+      max-width: 90%;
+      overflow-x: auto;
+    }
+    #leadsTable {
+      border-collapse: collapse;
+      width: 100%;
+      max-width: 800px;
+    }
+    #leadsTable th, #leadsTable td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+    }
+    #leadsTable th {
+      background-color: #f4f4f4;
+    }
   </style>
 </head>
 <body>
@@ -50,8 +69,29 @@
     <button type="submit">Send</button>
   </form>
 
-<script>
+  <!-- Leads Section -->
+  <div id="leadsSection">
+    <h3>Leads</h3>
+    <table id="leadsTable">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Mobile</th>
+          <th>Country</th>
+          <th>Status</th>
+          <th>Remarks</th>
+          <th>Request Type</th>
+          <th>Created At</th>
+        </tr>
+      </thead>
+      <tbody id="leadsBody">
+        <tr><td colspan="8">Loading leads...</td></tr>
+      </tbody>
+    </table>
+  </div>
 
+<script>
   const sessionId = crypto.randomUUID();
   const request_type = "generic";
   const chatbox = document.getElementById('chatbox');
@@ -100,15 +140,14 @@
       const response = await fetch('/chat', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({input: userMsg,session_id: sessionId, request_type: request_type }) // include session id in payload
-        });
+        body: JSON.stringify({input: userMsg,session_id: sessionId, request_type: request_type })
+      });
 
       const data = await response.json();
       
       if (data.success) {
         chatbox.innerHTML += `<b>Bot:</b> ${data.response}<br>`;
       } else {
-        // Show the friendly error message
         chatbox.innerHTML += `<span style="color: red;"><b>Error:</b> ${data.error}</span><br>`;
       }
     } catch (err) {
@@ -117,10 +156,41 @@
     chatbox.scrollTop = chatbox.scrollHeight;
   };
 
-  // Call loadHistory when page loads
-  window.onload = loadHistory;
+  // Fetch and render leads
+  async function loadLeads() {
+    const tbody = document.getElementById("leadsBody");
+    try {
+      const res = await fetch('/leads');
+      const data = await res.json();
 
-  
+      if (res.status === 200 || res.status === 201) {
+        tbody.innerHTML = '';
+        data.leads.forEach(lead => {
+          tbody.innerHTML += `
+            <tr>
+              <td>${lead.name || '-'}</td>
+              <td>${lead.email || '-'}</td>
+              <td>${lead.mobile_number || '-'}</td>
+              <td>${lead.country || '-'}</td>
+              <td>${lead.status || '-'}</td>
+              <td>${lead.remarks || '-'}</td>
+              <td>${lead.request_type || '-'}</td>
+              <td>${lead.created_at || '-'}</td>
+            </tr>`;
+        });
+      } else {
+        tbody.innerHTML = `<tr><td colspan="8" style="color:red;">Error loading leads (${res.status})</td></tr>`;
+      }
+    } catch (err) {
+      tbody.innerHTML = `<tr><td colspan="8" style="color:red;">Network error loading leads.</td></tr>`;
+    }
+  }
+
+  // Load history + leads when page loads
+  window.onload = () => {
+    loadHistory();
+    loadLeads();
+  };
 </script>
 </body>
 </html>
