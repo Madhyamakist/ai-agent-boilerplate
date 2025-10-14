@@ -232,6 +232,73 @@ paths:
                   error:
                     type: string
                     example: "Unable to fetch chat info. Please try again later."
+    /chat-info:
+    delete:
+      summary: Delete a lead by session_id
+      description: >
+        Permanently deletes the lead (chat info) record from the database  
+        that matches the given `session_id`.
+      parameters:
+        - name: session_id
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Unique session identifier of the lead to delete
+          example: "0b3cf7e1-5b30-46df-b018-85ca4dbd4391"
+      responses:
+        "200":
+          description: Lead deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Lead deleted successfully."
+        "404":
+          description: Lead not found for the given session_id
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: "No lead found for the provided session_id."
+        "400":
+          description: Invalid session_id parameter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: "Invalid or missing session_id."
+        "500":
+          description: Server error while deleting lead
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: "Unable to delete lead. Please try again later."
 
   /chat-info:
     patch:
