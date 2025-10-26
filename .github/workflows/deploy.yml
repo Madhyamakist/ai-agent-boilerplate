@@ -4,14 +4,14 @@ on:
   push:
     branches:
       - main
-      #- dev10
+      - dev10
       - staging   # change if you want a different branch for staging
 
 jobs:
   deploy-staging:
     if: github.ref != 'refs/heads/main'
     runs-on: ubuntu-latest
-    environment: deploy   # matches the environment you created in GitHub
+    environment: deploy-staging   # matches the environment you created in GitHub
 
     steps:
       - uses: 'actions/checkout@v4' # Checkout your repository
@@ -34,7 +34,7 @@ jobs:
   deploy-production:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    environment: deploy   # matches the environment you created in GitHub
+    environment: deploy-staging  # matches the environment you created in GitHub
 
     steps:
       - uses: 'actions/checkout@v4' # Checkout your repository

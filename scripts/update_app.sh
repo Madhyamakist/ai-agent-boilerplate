@@ -31,4 +31,4 @@ git -c safe.directory=/home/vivek/Ai-agent-boilerplate/ai-agent-boilerplate clea
 
 echo "Running deploy.sh..." | tee -a "$LOG_FILE"
 chmod +x scripts/deploy.sh
-./scripts/deploy.sh deploy
+./scripts/deploy.sh deploy >> "$LOG_FILE" 2>&1
