@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - dev10
       - staging   # change if you want a different branch for staging
 
 jobs:

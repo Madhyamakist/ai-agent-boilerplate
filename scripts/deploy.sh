@@ -8,22 +8,18 @@ cd /home/vivek/Ai-agent-boilerplate/ai-agent-boilerplate
 
 echo "Activating virtualenv..."
 source venv/bin/activate
-
-echo "Loading env variables..."
-source /root/.bashrc  
-
-echo "Generating .env file using Python script..."
+ 
 cd code
 
 echo "Cleaning old .env and Flask logs..."
 rm -f .env
 rm -f flask.log
 
-python3 get_env.py
-
-
 echo "Installing dependencies..."
 pip install -r requirements.txt
+
+echo "Generating .env file using Python script..."
+python3 get_env.py
 
 echo "Restarting service..."
 pkill -f flask || true
