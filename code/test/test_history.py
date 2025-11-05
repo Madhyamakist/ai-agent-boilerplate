@@ -32,17 +32,6 @@ class TestHistoryAPI:
         data = response.get_json()
         assert data["error"] == "Invalid session_id format"
 
-    # def test_history_server_error_simulation(self, client):
-    #     """Test 4: History - Server Error Test"""
-    #     # Assumes get_history function has a condition to raise an error
-    #     # for this specific session_id.
-    #     session_id = "test-500-internal-error"
-    #     response = client.get('/history', query_string={'session_id': session_id})
-
-    #     assert response.status_code == HTTPStatus.INTERNAL_SERVER_ERROR
-    #     data = response.get_json()
-    #     assert data["error"] == "Network issue loading history."
-
     def test_history_new_vs_existing_session(self, client):
         """Test 4: Differentiate between new (201) and existing (200) sessions"""
         new_session_id = str(uuid.uuid4())

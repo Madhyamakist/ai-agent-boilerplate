@@ -129,13 +129,6 @@ Now visit http://127.0.0.1:5000 in your browser.
 If flask is rendered successfully, then test APIs by:
 
 ```bash
-cd code
-cd test
+cd code/test
 pytest
-```
-or
-```bash
-cd code
-cd test
-pytest --html=test_report.html --self-contained-html -v
 ```
