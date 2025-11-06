@@ -1,32 +1,25 @@
 #!/bin/bash
 set -e  # exit if any command fails
 
-echo "Going to dir"
+echo "==== Starting deploy.sh ===="
 
 
 cd /home/vivek/Ai-agent-boilerplate/ai-agent-boilerplate
 
 echo "Activating virtualenv..."
 source venv/bin/activate
-
-echo "Loading env variables..."
-source /root/.bashrc  
-echo "Setup .env file"
-echo ${POSTGRES_PASSWORD}
+ 
 cd code
-echo -n > .env
-cat <<EOF > .env
-DEBUG=True
-GROQ_API_KEY=${GROQ_API_KEY}
-GROQ_MODEL_NAME=meta-llama/llama-4-scout-17b-16e-instruct
-# PostgreSQL Database Configuration
-# Local PostgreSQL connection (adjust username/password as needed)
-DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@localhost:5432/
-EOF
 
+echo "Cleaning old .env and Flask logs..."
+rm -f .env
+rm -f flask.log
 
 echo "Installing dependencies..."
 pip install -r requirements.txt
+
+echo "Generating .env file using Python script..."
+python3 get_env.py
 
 echo "Restarting service..."
 pkill -f flask || true

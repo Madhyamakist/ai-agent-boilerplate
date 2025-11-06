@@ -1,7 +1,6 @@
 import os
 import uuid
 import psycopg
-from langchain.memory import ConversationBufferMemory
 from langchain_postgres import PostgresChatMessageHistory
 from config import DATABASE_URL, db_name, table_name
 
