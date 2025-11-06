@@ -5,3 +5,6 @@ __pycache__/
 # Virtual Environment
 venv/
 .env
+code/test/test_report.html
+# Pytest cache
+.pytest_cache/

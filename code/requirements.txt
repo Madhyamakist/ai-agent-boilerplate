@@ -9,3 +9,6 @@ psycopg[binary,pool]
 langchain-core
 flask_swagger_ui
 google-cloud-secret-manager
+requests
+pytest
+pytest-html
