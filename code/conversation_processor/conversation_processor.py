@@ -3,7 +3,7 @@ from datetime import datetime
 from db import sync_connection
 from langchain_groq import ChatGroq
 from config import GROQ_API_KEY, GROQ_MODEL_NAME, agent_type
-from langchain.schema import SystemMessage, HumanMessage, AIMessage
+from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from system_prompt import get_name_prompt, get_info_prompt
 
 def process_conversation(user_input, session_id, request_type):

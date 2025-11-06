@@ -5,7 +5,7 @@ import sys
 PROJECT_ID = "ai-agent-boilerplate0"  
 SECRET_MAPPING = {
     "GROQ_API_KEY": "GROQ_API_KEY",           
-    "POSTGRES_PASSWORD": "POSTGRES_PASSWORD"
+    "POSTGRES_URL": "POSTGRES_URL"
 }
 ENV_FILE_PATH = ".env"
 
@@ -30,7 +30,7 @@ GROQ_API_KEY={secrets['GROQ_API_KEY']}
 GROQ_MODEL_NAME=meta-llama/llama-4-scout-17b-16e-instruct
 
 # PostgreSQL Database Configuration
-DATABASE_URL=postgresql://postgres:{secrets['POSTGRES_PASSWORD']}@localhost:5432/
+DATABASE_URL={secrets['POSTGRES_URL']}
 """
 
         with open(env_path, "w") as f:
