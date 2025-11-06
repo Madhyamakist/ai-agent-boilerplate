@@ -130,5 +130,5 @@ If flask is rendered successfully, then test APIs by:
 
 ```bash
 cd code/test
-pytest
+pytest --html=test_report.html --self-contained-html -v
 ```
