@@ -218,6 +218,7 @@ paths:
                           enum: [OPEN, CLOSED, QUALIFYING]
                           description: Analyst status for that session id
                           example: "OPEN"
+
                         remarks:
                           type: string
                           description: Analyst's remark for that session id
@@ -229,10 +230,11 @@ paths:
               schema:
                 type: object
                 properties:
+
                   error:
                     type: string
                     example: "Unable to fetch chat info. Please try again later."
-    /chat-info:
+  /delete-info:
     delete:
       summary: Delete a lead by session_id
       description: >
