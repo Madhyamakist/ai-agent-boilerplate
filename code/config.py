@@ -30,9 +30,9 @@ def get_db_name():
             branch_name  = response.text.strip()
             print(f"Detected branch: {branch_name}")
             if branch_name == 'main':
-                cloud_db_name = 'prod_chat_db'
+                return 'prod_chat_db'
             else:
-                cloud_db_name = 'staging_chat_db'
+                return 'staging_chat_db'
     except Exception as e:
         print(f"Could not fetch metadata (defaulting to local DB): {e}")
 
