@@ -15,7 +15,7 @@ components:
         Status of the lead.  
         Allowed values:  
         - OPEN → New lead, not yet processed
-        - CLOSE → Lead is closed  
+        - CLOSED → Lead is closed  
         - QUALIFYING → Lead is in process  
       enum: [OPEN, CLOSED, QUALIFYING]
       example: OPEN
@@ -56,6 +56,7 @@ paths:
                   example: "Hello bot"
                 session_id:
                   type: string
+                  format: UUID
                   description: Session identifier for maintaining context. **Must be a valid UUID.**
                   example: "0b3cf7e1-5b30-46df-b018-85ca4dbd4391"
                 request_type:
@@ -115,6 +116,7 @@ paths:
           required: true
           schema:
             type: string
+            format: UUID
           description: Unique session identifier
       responses:
         '200':
@@ -151,6 +153,7 @@ paths:
                 properties:
                   session_id:
                     type: string
+                    format: UUID
                     description: Newly created session identifier
                   history:
                     type: array
@@ -173,7 +176,7 @@ paths:
           description: Invalid session_id format
         '500':
           description: Server error
-  /leads:
+  /chat-info:
     get:
       summary: Retrieve stored chat info
       description: >
@@ -194,6 +197,7 @@ paths:
                       properties:
                         session_id:
                           type: string
+                          format: UUID
                           description: Session identifier
                           example: "0b3cf7e1-5b30-46df-b018-85ca4dbd4391"
                         name:
@@ -234,7 +238,7 @@ paths:
                   error:
                     type: string
                     example: "Unable to fetch chat info. Please try again later."
-  /delete-info:
+
     delete:
       summary: Delete a lead by session_id
       description: >
@@ -246,6 +250,7 @@ paths:
           required: true
           schema:
             type: string
+            format: UUID
           description: Unique session identifier of the lead to delete
           example: "0b3cf7e1-5b30-46df-b018-85ca4dbd4391"
       responses:
@@ -301,8 +306,7 @@ paths:
                   error:
                     type: string
                     example: "Unable to delete lead. Please try again later."
-
-  /chat-info:
+                    
     patch:
       summary: Update lead status and remarks
       description: >
@@ -318,6 +322,7 @@ paths:
               properties:
                 session_id:
                   type: string
+                  format: UUID
                   description: Unique session identifier of the lead
                   example: "0b3cf7e1-5b30-46df-b018-85ca4dbd4391"
                 status:
@@ -361,6 +366,7 @@ paths:
                     properties:
                       session_id:
                         type: string
+                        format: UUID
                         example: "0b3cf7e1-5b30-46df-b018-85ca4dbd4391"
                       status:
                         $ref: '#/components/schemas/status'
