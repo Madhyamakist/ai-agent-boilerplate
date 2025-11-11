@@ -1,10 +1,9 @@
 from db import sync_connection
 
-def update_lead(session_id: str, status: str = None, remarks: str = None):
+def update_chat_info(session_id: str, status: str = None, remarks: str = None):
 
     """
-    Update lead in mock DB
-    Returns: (updated_lead_dict, error_message, http_code)
+    Insert or update a row in chat_info and return the updated row.
     """
     try:
         sync_connection.rollback()
