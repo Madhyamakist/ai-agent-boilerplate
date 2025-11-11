@@ -7,8 +7,9 @@ from config import DEBUG
 from flask_cors import CORS 
 from flask_swagger_ui import get_swaggerui_blueprint
 from history import get_history
-from leads import get_all_leads
-from leads_update import update_lead
+from leads import get_all_chat_info
+from leads_update import update_chat_info
+from delete_info import delete_chat_info
 app = Flask(__name__)
 CORS(app)
 
@@ -47,10 +48,10 @@ def history_endpoint():
     history_data, status = get_history(session_id)
     return jsonify(history_data), status
 
-@app.route('/leads', methods=['GET'])
-def get_leads():
+@app.route('/chat-info', methods=['GET'])
+def get_chat_info():
     try:
-        leads_data, status = get_all_leads()
+        leads_data, status = get_all_chat_info()
         return jsonify({"leads":leads_data}), status
     except Exception as e:
         print(f"Error in get_leads endpoint: {e}")
@@ -70,12 +71,40 @@ def patch_updates():
         result = validate_update_data(update_data, session_id, status)
         if not result["is_valid"]:
             return jsonify({"error": result["message"]}), result["status"]
-        update_lead(session_id, status, remarks)
-        return jsonify({"sucess":True, "message":"Leads updated"}), HTTPStatus.OK
+        update_chat_info(session_id, status, remarks)
+        return jsonify({"sucess":True, "message":"chat-info updated"}), HTTPStatus.OK
     except Exception as e:
         return jsonify({
             "success": False,
-            "error": f"Unable to update lead. Please try again later. ({str(e)})"
+            "error": f"Unable to update chat-info. Please try again later. ({str(e)})"
+        }), HTTPStatus.INTERNAL_SERVER_ERROR
+
+@app.route('/chat-info', methods=['DELETE'])
+def delete_chat_info_row():
+    try:
+        session_id = request.args.get("session_id")
+        result = validate_session_id(session_id)
+        if not result["is_valid"]:
+            return jsonify({"error": result["message"]}), result["status"]
+        
+        deleted = delete_chat_info(session_id)
+
+        if deleted:
+            return jsonify({
+                "success": True,
+                "message": "chat-info deleted successfully."
+            }), HTTPStatus.OK
+        else:
+            return jsonify({
+                "success": True,
+                "message": "No chat-info found for the provided session_id. Nothing to delete."
+            }), HTTPStatus.NOT_FOUND
+        
+    except Exception as e:
+        print(f"Error in delete_chat_info: {e}")
+        return jsonify({
+            "success": False,
+            "error": "Unable to delete lead. Please try again later."
         }), HTTPStatus.INTERNAL_SERVER_ERROR
 
 #Rendering response
