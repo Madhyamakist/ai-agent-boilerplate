@@ -91,6 +91,66 @@ def ensure_summaries_table_exists(sync_connection):
             
     except Exception as e:
         print(f"Error creating chat_info table: {e}")
+        sync_connection.rollback()
+
+def ensure_prompts_table_exists(sync_connection):
+    """
+    Create or verify a 'prompts' table with columns:
+      - agent_type
+      - prompt_name
+      - prompt_description
+    """
+    try:
+        with sync_connection.cursor() as cur:
+            create_table_sql = """
+            CREATE TABLE IF NOT EXISTS prompts (
+                id SERIAL PRIMARY KEY,
+                agent_type TEXT NOT NULL,
+                prompt_name TEXT NOT NULL,
+                prompt_description TEXT,
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+            );
+            
+            CREATE INDEX IF NOT EXISTS idx_prompts_agent_type ON prompts(agent_type);
+            CREATE INDEX IF NOT EXISTS idx_prompts_prompt_name ON prompts(prompt_name);
+            """
+            cur.execute(create_table_sql)
+            sync_connection.commit()
+            print("Table 'prompts' created/verified successfully.")
+    except Exception as e:
+        print(f"Error creating prompts table: {e}")
+        sync_connection.rollback()
+
+def ensure_domains_table_exists(sync_connection):
+    """
+    Create or verify a 'domains' table with columns:
+      - key
+      - address
+      - domain_prompt
+      - domain_message
+    Note: column name 'key' will be created quoted to avoid ambiguity; it's still a valid column name.
+    """
+    try:
+        with sync_connection.cursor() as cur:
+            create_table_sql = """
+            CREATE TABLE IF NOT EXISTS domains (
+                id SERIAL PRIMARY KEY,
+                "key" TEXT NOT NULL UNIQUE,
+                address TEXT,
+                domain_prompt TEXT,
+                domain_message TEXT,
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+            );
+            
+            CREATE INDEX IF NOT EXISTS idx_domains_key ON domains("key");
+            CREATE INDEX IF NOT EXISTS idx_domains_address ON domains(address);
+            """
+            cur.execute(create_table_sql)
+            sync_connection.commit()
+            print("Table 'domains' created/verified successfully.")
+    except Exception as e:
+        print(f"Error creating domains table: {e}")
+        sync_connection.rollback()
 
 def setup_database_and_table(database_url, table_name):
     """
@@ -102,6 +162,9 @@ def setup_database_and_table(database_url, table_name):
 
         ensure_chat_table_exists(sync_connection, table_name)
         ensure_summaries_table_exists(sync_connection)
+        ensure_prompts_table_exists(sync_connection)
+        ensure_domains_table_exists(sync_connection)
+
         return sync_connection, table_name
     except Exception as e:
         print(f"Error setting up database: {e}")
